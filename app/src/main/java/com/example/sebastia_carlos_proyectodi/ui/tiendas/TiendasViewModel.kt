@@ -11,14 +11,25 @@ import com.example.sebastia_carlos_proyectodi.domain.model.Tienda
 import com.example.sebastia_carlos_proyectodi.domain.repository.TiendaRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow(TiendasUiState())
-    val uiState: StateFlow<TiendasUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<TiendasUiState> = repository.getTiendasStream()
+        .map { lista ->
+            TiendasUiState(tiendas = lista, isLoading = false)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = TiendasUiState(isLoading = true)
+        )
 
     init {
         cargarTiendas()
@@ -26,12 +37,12 @@ class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
 
     fun cargarTiendas() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
             try {
-                val lista = repository.obtenerTiendas()
-                _uiState.update { it.copy(tiendas = lista, isLoading = false) }
+                repository.refreshTiendas()
+            } catch (e: IOException) {
+                println("Error de conexión: ${e.message}")
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message, isLoading = false) }
+                println("Error inesperado: ${e.message}")
             }
         }
     }
@@ -49,6 +60,6 @@ class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
 
 data class TiendasUiState(
     val tiendas : List<Tienda> = emptyList(),
-    val isLoading : Boolean = true,
+    val isLoading : Boolean = false,
     val error: String? = null
 )

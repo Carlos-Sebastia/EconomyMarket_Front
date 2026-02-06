@@ -28,7 +28,7 @@ class ProductoRepositoryImpl(
             val entidades = respuesta.map { it.toEntity() }
 
             productoDao.deleteAll()
-            productoDao.insertAll(entidades)
+            productoDao.insertProductos(entidades)
         } catch (e: Exception) {
             e.printStackTrace()
         }

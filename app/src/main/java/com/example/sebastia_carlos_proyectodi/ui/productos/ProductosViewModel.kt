@@ -10,14 +10,37 @@ import com.example.sebastia_carlos_proyectodi.MyApplication
 import com.example.sebastia_carlos_proyectodi.domain.model.Producto
 import com.example.sebastia_carlos_proyectodi.domain.repository.ProductoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class ProductosViewModel(private val repository : ProductoRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow(ProductosUiState())
-    val uiState: StateFlow<ProductosUiState> = _uiState.asStateFlow()
+
+    private val _categoriaSeleccionada = MutableStateFlow<String?>(null)
+
+    val uiState: StateFlow<ProductosUiState> = repository.getProductosStream()
+        .combine(_categoriaSeleccionada) { productos, categoria ->
+            val productosFiltrados = if (categoria == null) {
+                productos
+            } else {
+                productos.filter { it.categoria == categoria }
+            }
+            ProductosUiState(
+                productos = productosFiltrados,
+                categoriaSeleccionada = categoria,
+                isLoading = false
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ProductosUiState(isLoading = true)
+        )
 
     init {
         cargarProductos()
@@ -25,18 +48,18 @@ class ProductosViewModel(private val repository : ProductoRepository) : ViewMode
 
     fun cargarProductos() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
             try {
-                val lista = repository.obtenerProductos()
-                _uiState.update { it.copy(productos = lista, isLoading = false) }
+                repository.refreshProductos()
+            } catch (e: IOException) {
+                println("Error de conexión: ${e.message}")
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
+                println("Error inesperado: ${e.message}")
             }
         }
     }
 
     fun actualizarCategoria(nuevaCategoria: String?) {
-        _uiState.update { it.copy(categoriaSeleccionada = nuevaCategoria) }
+        _categoriaSeleccionada.value = nuevaCategoria
     }
 
     companion object {

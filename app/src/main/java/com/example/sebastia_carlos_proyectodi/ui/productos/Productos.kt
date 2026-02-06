@@ -206,7 +206,7 @@ fun ItemProducto(
 ) {
     val context = LocalContext.current
     val imageResId = context.resources.getIdentifier(
-        producto.imagenUrl, "drawable", context.packageName
+        producto.imagen, "drawable", context.packageName
     )
     // Acceso al esquema de colores
     val colores = MaterialTheme.colorScheme
@@ -228,7 +228,7 @@ fun ItemProducto(
             // Imagen del producto
             AsyncImage(
                 model = ImageRequest.Builder(context)
-                    .data(producto.imagenUrl)
+                    .data(producto.imagen)
                     .crossfade(true)
                     .build(),
 
@@ -237,7 +237,7 @@ fun ItemProducto(
                 error = painterResource(R.drawable.ic_launcher_foreground),
                 //AÑADIR IMÁGENES DE CARGA Y ERROR!!!
 
-                contentDescription = producto.nombreProducto,
+                contentDescription = producto.nombre,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
@@ -247,13 +247,13 @@ fun ItemProducto(
 
             // Nombre del producto
             Text(
-                producto.nombreProducto,
+                producto.nombre,
                 modifier = Modifier.padding(8.dp),
             )
 
             // Precio del producto
             Text(
-                producto.precioProducto,
+                producto.nombre,
                 modifier = Modifier.padding(8.dp),
             )
         }
