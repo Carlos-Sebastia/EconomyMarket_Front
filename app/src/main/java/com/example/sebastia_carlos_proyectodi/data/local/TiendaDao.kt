@@ -11,9 +11,6 @@ interface TiendaDao {
     @Query("SELECT * FROM tiendas")
     fun getAllTiendas(): Flow<List<TiendaEntity>>
 
-    @Query("SELECT * FROM tiendas WHERE id = :id")
-    suspend fun getTiendaById(id: Int): TiendaEntity?
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTiendas(tiendas: List<TiendaEntity>)
 
