@@ -9,7 +9,7 @@ fun ProductoDto.toEntity(): ProductoEntity = ProductoEntity (
     id = this.id,
     nombre = this.nombre,
     precio = this.precio,
-    imagen = this.imagen,
+    imagen = this.imagen ?: "placeholder_default",
     categoria = this.categoria
 )
 

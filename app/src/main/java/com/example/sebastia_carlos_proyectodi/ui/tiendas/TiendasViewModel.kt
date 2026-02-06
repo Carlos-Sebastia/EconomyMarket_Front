@@ -39,11 +39,8 @@ class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 repository.refreshTiendas()
-            } catch (e: IOException) {
-                println("Error de conexión: ${e.message}")
             } catch (e: Exception) {
-                println("Error inesperado: ${e.message}")
-            }
+                println("ERROR CRÍTICO: ${e.message}")            }
         }
     }
 

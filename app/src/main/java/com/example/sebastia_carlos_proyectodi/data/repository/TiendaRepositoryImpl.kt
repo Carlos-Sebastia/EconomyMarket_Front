@@ -25,20 +25,17 @@ class TiendaRepositoryImpl(
     override suspend fun refreshTiendas() = withContext(Dispatchers.IO) {
         try {
             val respuesta = api.getTiendas()
-            val entidades = respuesta.map { dto ->
-                dto.toEntity()
-            }
+            val entidades = respuesta.map { it.toEntity() }
+
             tiendaDao.deleteAllTiendas()
             tiendaDao.insertTiendas(entidades)
         } catch (e: Exception) {
-            // Si falla la red, no lanzamos excepción para que la app
-            // siga mostrando lo que hay en la base de datos
             e.printStackTrace()
         }
     }
 
     override suspend fun obtenerTiendas(): List<Tienda> = withContext(Dispatchers.IO) {
         refreshTiendas()
-        emptyList()
+        tiendaDao.getAllTiendasOnce().map { it.toDomain() }
     }
 }

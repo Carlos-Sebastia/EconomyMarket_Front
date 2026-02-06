@@ -204,45 +204,45 @@ fun FilaChips(
 fun ItemProducto(
     producto : Producto
 ) {
-    val context = LocalContext.current
-    val imageResId = context.resources.getIdentifier(
-        producto.imagen, "drawable", context.packageName
-    )
-    // Acceso al esquema de colores
     val colores = MaterialTheme.colorScheme
+
+    val context = LocalContext.current
+    val resId = remember(producto.imagen) {
+        if (producto.imagen.isNullOrEmpty()) {
+            R.drawable.home_mesa
+        } else {
+            val id = context.resources.getIdentifier(
+                producto.imagen.trim(),
+                "drawable",
+                context.packageName
+            )
+            if (id != 0) id else R.drawable.ic_launcher_foreground
+        }
+    }
 
     // Card que contiene toda la información del producto
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp)
+            .height(300.dp)
             .padding(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
-            contentColor = colores.onSecondary
+            contentColor = Color.Black
         ),
         shape = MaterialTheme.shapes.small,
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column {
             // Imagen del producto
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(producto.imagen)
-                    .crossfade(true)
-                    .build(),
-
-                //AÑADIR IMÁGENES DE CARGA Y ERROR!!!
-                placeholder = painterResource(R.drawable.home_mesa),
-                error = painterResource(R.drawable.ic_launcher_foreground),
-                //AÑADIR IMÁGENES DE CARGA Y ERROR!!!
-
+            Image(
+                painter = painterResource(id = resId),
                 contentDescription = producto.nombre,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .height(150.dp),
                 contentScale = ContentScale.Crop
-
             )
 
             // Nombre del producto
@@ -253,7 +253,7 @@ fun ItemProducto(
 
             // Precio del producto
             Text(
-                producto.nombre,
+                producto.precio,
                 modifier = Modifier.padding(8.dp),
             )
         }

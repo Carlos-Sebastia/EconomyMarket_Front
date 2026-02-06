@@ -1,8 +1,10 @@
 package com.example.sebastia_carlos_proyectodi.data.remote
 
+import com.google.gson.annotations.SerializedName
+
 data class TiendaDto(
-    val id: Long,
-    val ciudad: String,
-    val direccion: String,
-    val imagen: String
+    @SerializedName("id") val id: Long,
+    @SerializedName("ciudad") val ciudad: String,
+    @SerializedName("direccion") val direccion: String,
+    @SerializedName("urlImagen") val imagen: String?
 )

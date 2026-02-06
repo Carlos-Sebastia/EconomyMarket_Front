@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlin.collections.map
 
 class ProductoRepositoryImpl(
     private val api: ProductoApiService,
@@ -34,8 +35,8 @@ class ProductoRepositoryImpl(
         }
     }
 
-    override suspend fun obtenerProductos(): List<Producto> {
+    override suspend fun obtenerProductos(): List<Producto> = withContext(Dispatchers.IO) {
         refreshProductos()
-        return emptyList()
+        productoDao.getAllProductosOnce().map { it.toDomain() }
     }
 }
