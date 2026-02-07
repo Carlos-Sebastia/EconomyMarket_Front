@@ -39,7 +39,8 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val productoRepository: ProductoRepository by lazy {
         ProductoRepositoryImpl(
             productoService,
-            database.productoDao()
+            database.productoDao(),
+            database.listaDao()
 
         )
     }

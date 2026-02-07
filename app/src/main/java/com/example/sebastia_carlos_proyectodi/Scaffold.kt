@@ -1,5 +1,7 @@
 package com.example.sebastia_carlos_proyectodi
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -60,6 +62,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -73,6 +76,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.sebastia_carlos_proyectodi.domain.model.Producto
 import com.example.sebastia_carlos_proyectodi.ui.HomeViewModel
+import com.example.sebastia_carlos_proyectodi.ui.PantallaLista
 import com.example.sebastia_carlos_proyectodi.ui.PantallaPrincipal
 import com.example.sebastia_carlos_proyectodi.ui.productos.PantallaProductos
 import com.example.sebastia_carlos_proyectodi.ui.productos.ProductosViewModel
@@ -164,7 +168,6 @@ fun MyModalDrawer(
                                 when (item) {
                                     "Inicio" -> navController.navigate("home")
                                     "Tiendas" -> navController.navigate("tiendas")
-                                    //"Ajustes" -> navController.navigate("pantalla productos")
                                     else -> null
                                 }
                                 corutina.launch {
@@ -225,8 +228,6 @@ fun MyScaffold(
     val colores = MaterialTheme.colorScheme
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    var isFavourite by rememberSaveable { mutableStateOf(false) }
-    var isFavourite2 by rememberSaveable { mutableStateOf(false) }
 
     val topBarConfig = when (currentRoute) {
         "home" ->
@@ -243,7 +244,6 @@ fun MyScaffold(
                 fontFamily = FontFamily(Font(R.font.bebas_regular)),
                 color = colores.onSecondary,
                 fontSize = 30.sp
-
             )
 
         "productos" ->
@@ -252,8 +252,14 @@ fun MyScaffold(
                 fontFamily = FontFamily(Font(R.font.bebas_regular)),
                 color = colores.onSecondary,
                 fontSize = 30.sp
+            )
 
-
+        "lista" ->
+            TopBarConfig(
+                title = "Mi Lista",
+                fontFamily = FontFamily(Font(R.font.bebas_regular)),
+                color = colores.onSecondary,
+                fontSize = 30.sp
             )
 
         else -> TopBarConfig(title = "", fontSize = 20.sp)
@@ -400,11 +406,10 @@ fun IconoBotonBottomBar(icono : ImageVector, texto : String, navController : Nav
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
         IconButton(
-            onClick = { //Navegación según el texto
+            onClick = {
                 when (texto) {
                     "Productos" -> navController.navigate("productos")
-                    "Mi lista" -> null//navController.navigate("lista")
-                    //"Productos" -> navController.navigate("pantalla productos")
+                    "Mi lista" -> navController.navigate("lista")
                     else -> null
                 }
             }
@@ -412,7 +417,7 @@ fun IconoBotonBottomBar(icono : ImageVector, texto : String, navController : Nav
             Icon(imageVector = icono, contentDescription = null) //Dibuja el icono
         }
 
-        Text(texto) //Texto bajo el botón
+        Text(texto)
     }
 }
 
@@ -455,6 +460,12 @@ fun MyFAB(navController: NavHostController) {
 @Composable
 fun AppNavGraph(navController: NavHostController) {
 
+    val activity = LocalActivity.current as ComponentActivity
+    val productosViewModel: ProductosViewModel = viewModel (
+        viewModelStoreOwner = activity,
+        factory = ProductosViewModel.Factory
+    )
+
     NavHost(
         navController = navController,
         startDestination = "home"   // Pantalla inicial al abrir la app
@@ -481,10 +492,15 @@ fun AppNavGraph(navController: NavHostController) {
             PantallaTiendas(navController, tiendasViewModel)
         }
 
-        // Pantalla donde elegir preferencias de juegos
+        // Pantalla tarjeta
         composable("tarjeta") {
             val tarjetaViewModel : TarjetaViewModel = viewModel(factory = TarjetaViewModel.Factory)
             PantallaTarjeta(navController, tarjetaViewModel)
+        }
+
+        //Pantalla lista
+        composable("lista") {
+            PantallaLista(navController, productosViewModel)
         }
     }
 }

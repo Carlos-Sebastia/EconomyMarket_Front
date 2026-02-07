@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KebabDining
 import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.SetMeal
@@ -35,6 +38,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -103,13 +107,17 @@ fun PantallaProductos(
                 uiState.error != null -> {
                     PantallaErrorDatos(
                         mensaje = uiState.error ?: "Error desconocido",
-                        onReintentar = { viewModel.cargarProductos() } // Debes tener esta función en el VM
+                        onReintentar = { viewModel.cargarProductos() }
                     )                }
                 else -> {
-                    AnimatedContent(targetState = listaFiltrada) { listaAMostrar ->
-                        ListaProductosFiltrada(listaAMostrar)
-                    }
+                    ListaProductosFiltrada(
+                        lista = listaFiltrada,
+                        idsEnLista = uiState.idsEnLista,
+                        onUpdateItem = { producto, isInList ->
+                            viewModel.updateListaItems(producto, isInList) }
+                    )
                 }
+
             }
         }
     }
@@ -202,7 +210,9 @@ fun FilaChips(
 
 @Composable
 fun ItemProducto(
-    producto : Producto
+    producto : Producto,
+    estaEnLista: Boolean,
+    onCheckedChange: (Boolean) -> Unit
 ) {
     val colores = MaterialTheme.colorScheme
 
@@ -224,7 +234,7 @@ fun ItemProducto(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
+            .height(320.dp)
             .padding(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
@@ -234,43 +244,71 @@ fun ItemProducto(
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column {
-            // Imagen del producto
-            Image(
-                painter = painterResource(id = resId),
-                contentDescription = producto.nombre,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentScale = ContentScale.Crop
-            )
+                // Imagen del producto
+                Image(
+                    painter = painterResource(id = resId),
+                    contentDescription = producto.nombre,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    contentScale = ContentScale.Crop
+                )
 
-            // Nombre del producto
-            Text(
-                producto.nombre,
-                modifier = Modifier.padding(8.dp),
-            )
+                // Nombre del producto
+                Text(
+                    producto.nombre,
+                    modifier = Modifier.padding(8.dp),
+                )
 
-            // Precio del producto
-            Text(
-                producto.precio,
-                modifier = Modifier.padding(8.dp),
-            )
-        }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                    Text(
+                        producto.precio,
+                        modifier = Modifier.padding(8.dp),
+                    )
+                    IconButton(
+                        onClick = { onCheckedChange(estaEnLista) },
+                        //modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = if (estaEnLista) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = null,
+                            tint = if (estaEnLista) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
+                    }
+                }
+
+            }
+
     }
 }
 
 @Composable
-fun ListaProductosFiltrada(lista : List<Producto>) {
-    // Grid de 2 columnas
+fun ListaProductosFiltrada(
+    lista : List<Producto>,
+    idsEnLista: List<Long>,
+    onUpdateItem: (Producto, Boolean) -> Unit
+    ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize(),
         content = {
             items(lista) { producto ->
-                // Mostramos un card por producto
-                ItemProducto(producto = producto)
+                val estaEnLista = producto.id in idsEnLista
+                ItemProducto(
+                    producto = producto,
+                    estaEnLista = estaEnLista,
+                    onCheckedChange = { marcado ->
+                        onUpdateItem(producto, marcado)
+                    }
+                )
             }
         }
     )

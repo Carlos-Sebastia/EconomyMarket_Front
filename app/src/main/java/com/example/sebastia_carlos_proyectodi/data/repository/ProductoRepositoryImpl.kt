@@ -1,5 +1,7 @@
 package com.example.sebastia_carlos_proyectodi.data.repository
 
+import com.example.sebastia_carlos_proyectodi.data.local.ListaDao
+import com.example.sebastia_carlos_proyectodi.data.local.ListaEntity
 import com.example.sebastia_carlos_proyectodi.data.local.ProductoDao
 import com.example.sebastia_carlos_proyectodi.data.remote.ProductoApiService
 import com.example.sebastia_carlos_proyectodi.data.toDomain
@@ -14,7 +16,8 @@ import kotlin.collections.map
 
 class ProductoRepositoryImpl(
     private val api: ProductoApiService,
-    private val productoDao: ProductoDao
+    private val productoDao: ProductoDao,
+    private val listaDao: ListaDao
 ) : ProductoRepository {
 
     override fun getProductosStream(): Flow<List<Producto>> {
@@ -38,5 +41,19 @@ class ProductoRepositoryImpl(
     override suspend fun obtenerProductos(): List<Producto> = withContext(Dispatchers.IO) {
         refreshProductos()
         productoDao.getAllProductosOnce().map { it.toDomain() }
+    }
+
+    override fun getIdsEnLista(): Flow<List<Long>> {
+        return listaDao.getIdsEnLista()
+    }
+    override suspend fun insertarEnLista(id: Long) {
+        listaDao.insertar(ListaEntity(id))
+    }
+    override suspend fun eliminarDeLista(id: Long) {
+        listaDao.eliminar(ListaEntity(id))
+    }
+
+    override suspend fun vaciarLista() {
+        listaDao.vaciarLista()
     }
 }

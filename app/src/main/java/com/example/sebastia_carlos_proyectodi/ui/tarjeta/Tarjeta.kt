@@ -50,7 +50,7 @@ import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoD
 
 data class TarjetaUiState (
     val ticketDigital : Boolean = false,
-    val economyPay : Boolean = true
+    val economyPay : Boolean = false
 )
 
 @Composable
@@ -222,7 +222,6 @@ fun SwitchCard(
     state : Boolean,
     onCheckedChange : (Boolean) -> Unit
     ) {
-    var state by rememberSaveable { mutableStateOf(false) }
     val colores = MaterialTheme.colorScheme
 
     Card(
