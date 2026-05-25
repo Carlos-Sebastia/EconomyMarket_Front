@@ -22,7 +22,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         .baseUrl(baseUrl)
         .build()
 
-    // Las instancias de las APIs ya no son objetos globales, viven aquí dentro
     private val productoService: ProductoApiService by lazy {
         retrofit.create(ProductoApiService::class.java)
     }
@@ -35,7 +34,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         AppDataBase.getDatabase(context)
     }
 
-    // Los repositorios se crean pasando esas APIs
     override val productoRepository: ProductoRepository by lazy {
         ProductoRepositoryImpl(
             productoService,

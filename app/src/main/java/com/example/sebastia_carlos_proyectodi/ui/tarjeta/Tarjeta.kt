@@ -114,7 +114,6 @@ fun PantallaTarjeta(
                 )
             }
 
-            // Tarjeta socio
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

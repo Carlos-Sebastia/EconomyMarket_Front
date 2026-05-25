@@ -159,7 +159,7 @@ fun ChipFiltro(opcion : String) {
 @Composable
 fun FilaChips(
     categoriaSeleccionada: String?,
-    onCategoriaChange : (String) -> Unit
+    onCategoriaChange : (String?) -> Unit
 ) {
     val colores = MaterialTheme.colorScheme
     val chipList : List<String> = listOf(
@@ -168,8 +168,6 @@ fun FilaChips(
         "Vino",
         "Fruta y Verdura",
     )
-    val nombre : String
-    var selected by remember { mutableStateOf("") }
 
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -178,9 +176,13 @@ fun FilaChips(
             .fillMaxWidth()
     ) {
         items(chipList) { opcion ->
+            val estaSeleccionado = (opcion == categoriaSeleccionada)
             FilterChip(
                 selected = (opcion == categoriaSeleccionada),
-                onClick = { onCategoriaChange(opcion) },
+                onClick = {
+                    if (estaSeleccionado) {
+                    onCategoriaChange(null)
+                    } else { onCategoriaChange(opcion) }},
                 label = { Text(opcion) },
                 leadingIcon = if (opcion == categoriaSeleccionada) {
                     {
@@ -219,14 +221,14 @@ fun ItemProducto(
     val context = LocalContext.current
     val resId = remember(producto.imagen) {
         if (producto.imagen.isNullOrEmpty()) {
-            R.drawable.home_mesa
+            R.drawable.broken_image
         } else {
             val id = context.resources.getIdentifier(
                 producto.imagen.trim(),
                 "drawable",
                 context.packageName
             )
-            if (id != 0) id else R.drawable.ic_launcher_foreground
+            if (id != 0) id else R.drawable.broken_image
         }
     }
 
@@ -244,7 +246,6 @@ fun ItemProducto(
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column {
-                // Imagen del producto
                 Image(
                     painter = painterResource(id = resId),
                     contentDescription = producto.nombre,
@@ -322,11 +323,7 @@ fun PantallaErrorDatos(mensaje: String, onReintentar: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-
-            //AÑADIR IMÁGENES DE CARGA Y ERROR!!!
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
-            //AÑADIR IMÁGENES DE CARGA Y ERROR!!!
-
+            painter = painterResource(id = R.drawable.broken_image),
             contentDescription = null,
             modifier = Modifier.size(120.dp)
         )

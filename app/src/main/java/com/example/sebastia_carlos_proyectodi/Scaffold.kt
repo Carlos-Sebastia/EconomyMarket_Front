@@ -89,10 +89,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomScaffold(navController : NavHostController) {
+fun CustomScaffold(navController: NavHostController) {
 
     val corutina = rememberCoroutineScope()
-    val myDrawerState  = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val myDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     MyModalDrawer(
         navController = navController,
@@ -386,15 +386,14 @@ fun MyBottomAppBar(navController : NavHostController) {
     val colores = MaterialTheme.colorScheme
 
     BottomAppBar(
-        containerColor = colores.secondary, //Color del fondo
-        contentColor = colores.onSecondary, //Color de los iconos
+        containerColor = colores.secondary,
+        contentColor = colores.onSecondary,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly, //Espaciado uniforme
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            //Botones inferiores
             IconoBotonBottomBar(Icons.Default.ShoppingCart, "Productos", navController)
             IconoBotonBottomBar(Icons.Filled.ListAlt, "Mi lista", navController)
         }
@@ -414,7 +413,7 @@ fun IconoBotonBottomBar(icono : ImageVector, texto : String, navController : Nav
                 }
             }
         ) {
-            Icon(imageVector = icono, contentDescription = null) //Dibuja el icono
+            Icon(imageVector = icono, contentDescription = null)
         }
 
         Text(texto)
@@ -468,7 +467,7 @@ fun AppNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = "home"   // Pantalla inicial al abrir la app
+        startDestination = "home"
     ) {
 
         // Se crea un variable viewModel para cada composable para mantener el estado de cada uno

@@ -73,7 +73,6 @@ fun PantallaPrincipal(
             .background(colores.background)
     ) {
 
-        //Primer card con foto y texto
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -88,14 +87,14 @@ fun PantallaPrincipal(
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp), // Altura fija para la imagen
+                        .height(180.dp),
                     contentScale = ContentScale.Crop
                 )
 
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "Cenas inolvidables",
-                        style = MaterialTheme.typography.titleLarge, // Usa estilos del tema
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp,
                         color = Color.Black
@@ -113,7 +112,6 @@ fun PantallaPrincipal(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Segundo card (descuentos)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -138,7 +136,6 @@ fun PantallaPrincipal(
         Spacer(modifier = Modifier.height(10.dp))
 
 
-        // Tercer card (socio)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -153,14 +150,14 @@ fun PantallaPrincipal(
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp), // Altura fija para la imagen
+                        .height(300.dp),
                     contentScale = ContentScale.Crop
                 )
 
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "¡Hazte socio!",
-                        style = MaterialTheme.typography.titleLarge, // Usa estilos del tema
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp,
                         color = Color.Black

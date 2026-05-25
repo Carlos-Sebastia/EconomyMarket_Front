@@ -73,7 +73,7 @@ fun PantallaTiendas(
 
 @Composable
 fun ItemTienda(tienda: Tienda) {
-    val colores = MaterialTheme.colorScheme //Colores del tema
+    val colores = MaterialTheme.colorScheme
 
     Card (
         modifier = Modifier
@@ -81,55 +81,48 @@ fun ItemTienda(tienda: Tienda) {
             .height(200.dp)
             .padding(15.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White, //Color del card
-            contentColor = colores.onSecondary  //Color del texto
+            containerColor = Color.White,
+            contentColor = colores.onSecondary
         ),
         shape = MaterialTheme.shapes.small,
-        elevation = CardDefaults.cardElevation(6.dp) //Sombra
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically //Centrado vertical
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            //Imagen de la tienda
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(tienda.imagenUrl)
                     .crossfade(true)
                     .build(),
-
-                //AÑADIR IMÁGENES DE CARGA Y ERROR!!!
-                placeholder = painterResource(R.drawable.home_mesa),
-                error = painterResource(R.drawable.ic_launcher_foreground),
-                //AÑADIR IMÁGENES DE CARGA Y ERROR!!!
-
-
+                placeholder = painterResource(R.drawable.loading_image),
+                error = painterResource(R.drawable.broken_image),
                 contentDescription = "Foto tienda ${tienda.ciudad}",
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 contentScale = ContentScale.Crop
             )
 
-            //Datos de la tienda
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
                     .padding(8.dp),
-                verticalArrangement = Arrangement.Center, //Centrado vertical
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    tienda.ciudad, //Nombre de la provincia
+                    tienda.ciudad,
                     fontSize = 25.sp,
                     modifier = Modifier.padding(bottom = 15.dp),
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
 
-                Divider() //Separador
+                Divider()
 
                 Text(
-                    tienda.direccion, //Dirección de la tienda
+                    tienda.direccion,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 15.dp),
                     color = Color.Black
@@ -147,7 +140,7 @@ fun ListaTiendas(lista: List<Tienda>) {
         modifier = Modifier.fillMaxSize()
     ) {
         items(lista) { tienda ->
-            ItemTienda(tienda) //Mostramos un card por tienda
+            ItemTienda(tienda)
         }
     }
 }

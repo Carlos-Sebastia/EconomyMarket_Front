@@ -21,14 +21,13 @@ class ProductosViewModel(private val repository : ProductoRepository) : ViewMode
 
     private val _categoriaSeleccionada = MutableStateFlow<String?>(null)
 
-    // Nuevo estado para los productos tachados en la lista (UI State persistente)
     private val _idsProductosListaCogidos = MutableStateFlow<Set<Long>>(emptySet())
 
     val uiState: StateFlow<ProductosUiState> = combine(
         repository.getProductosStream(),
         repository.getIdsEnLista(),
         _categoriaSeleccionada,
-        _idsProductosListaCogidos // Combinamos el cuarto flujo
+        _idsProductosListaCogidos
     ) { productos, ids, categoria, cogidos ->
         val productosFiltrados = if (categoria == null) {
             productos
@@ -39,7 +38,7 @@ class ProductosViewModel(private val repository : ProductoRepository) : ViewMode
         ProductosUiState(
             productos = productosFiltrados,
             idsEnLista = ids,
-            idsProductosListaCogidos = cogidos, // Pasamos el set de IDs marcados
+            idsProductosListaCogidos = cogidos,
             categoriaSeleccionada = categoria,
             isLoading = false
         )
@@ -73,7 +72,6 @@ class ProductosViewModel(private val repository : ProductoRepository) : ViewMode
     fun vaciarLista() {
         viewModelScope.launch {
             repository.vaciarLista()
-            // Al vaciar la lista de la compra, limpiamos también los checks visuales
             _idsProductosListaCogidos.value = emptySet()
         }
     }

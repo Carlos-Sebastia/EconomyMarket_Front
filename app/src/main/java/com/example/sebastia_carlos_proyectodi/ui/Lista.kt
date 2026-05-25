@@ -33,7 +33,6 @@ fun PantallaLista(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Filtramos los productos que el usuario ha añadido a su lista
     val productosEnLista = uiState.productos.filter { it.id in uiState.idsEnLista }
 
     Column(
@@ -42,14 +41,12 @@ fun PantallaLista(
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(productosEnLista) { producto ->
-                // Comprobamos si este producto específico está en el set de "cogidos"
                 val estaCogido = producto.id in uiState.idsProductosListaCogidos
 
                 ItemLista(
                     nombre = producto.nombre,
                     estaCogido = estaCogido,
                     onCheckedChange = {
-                        // Llamamos a la función del ViewModel que creamos antes
                         viewModel.actualizarProductoCogido(producto.id)
                     }
                 )
@@ -76,7 +73,6 @@ fun ItemLista(
     estaCogido: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    // Ya no usamos rememberSaveable aquí. El estado fluye desde el ViewModel.
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,7 +89,6 @@ fun ItemLista(
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.bodyLarge,
-            // Aplicamos efectos visuales basados en el estado que viene de arriba
             textDecoration = if (estaCogido) TextDecoration.LineThrough else TextDecoration.None,
             color = if (estaCogido) Color.DarkGray else Color.Black
         )
