@@ -1,4 +1,5 @@
-package com.example.sebastia_carlos_proyectodi.ui.login
+package com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña
+
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -130,11 +131,8 @@ fun PantallaPrincipal(
                         Box {
                             if (usuario.isEmpty()) {
                                 Text(
-                                    text = "DNI",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        color = Color.Gray
-                                    )
+                                    text = "Nombre de usuario",
+                                    style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                                 )
                             }
                             innerTextField()
@@ -180,10 +178,7 @@ fun PantallaPrincipal(
                             if (password.isEmpty()) {
                                 Text(
                                     text = "Contraseña",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        color = Color.Gray
-                                    )
+                                    style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                                 )
                             }
                             innerTextField()
@@ -234,7 +229,7 @@ fun PantallaPrincipal(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview() {
+fun CambioContraseñaPreview() {
     Sebastia_carlos_proyectoDITheme {
         PantallaPrincipal(navController = rememberNavController())
     }
