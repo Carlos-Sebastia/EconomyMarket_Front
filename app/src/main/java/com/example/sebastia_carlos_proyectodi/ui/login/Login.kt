@@ -54,25 +54,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class HomeUiState(
+data class LoginUiState(
     val mensajeBanner : String = "Hasta un 30% de descuento en productos seleccionados",
 )
 
-class HomeViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
+class LoginViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState : StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer { HomeViewModel() }
+            initializer { LoginViewModel() }
         }
     }
 }
 
 @Composable
-fun PantallaPrincipal(
+fun PantallaLogin(
     navController : NavHostController,
-    viewModel : HomeViewModel = viewModel()
+    viewModel : LoginViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
@@ -236,6 +236,6 @@ fun PantallaPrincipal(
 @Composable
 fun LoginPreview() {
     Sebastia_carlos_proyectoDITheme {
-        PantallaPrincipal(navController = rememberNavController())
+        PantallaLogin(navController = rememberNavController())
     }
 }

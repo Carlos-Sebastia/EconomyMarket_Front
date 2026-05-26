@@ -10,21 +10,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Password
-import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -58,32 +53,33 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class CambioContraseñaUIState(
+data class ValidacionCambioContraseñaUiState(
     val mensajeBanner : String = "Hasta un 30% de descuento en productos seleccionados",
 )
-class CambioContraseñaViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(CambioContraseñaUIState())
-    val uiState : StateFlow<CambioContraseñaUIState> = _uiState.asStateFlow()
+
+class ValidacionCambioContraseñaViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(ValidacionCambioContraseñaUiState())
+    val uiState : StateFlow<ValidacionCambioContraseñaUiState> = _uiState.asStateFlow()
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer { CambioContraseñaViewModel() }
+            initializer { ValidacionCambioContraseñaViewModel() }
         }
     }
 }
 
 @Composable
-fun PantallaCambioContraseña(
+fun PantallaValidacionCambioContraseña(
     navController : NavHostController,
-    viewModel : CambioContraseñaViewModel = viewModel()
+    viewModel : ValidacionCambioContraseñaViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
     val scrollState = rememberScrollState()
 
     // Estados para los campos de texto
-    var contraseña by remember { mutableStateOf("") }
-    var contraseñaVerificacion by remember { mutableStateOf("") }
+    var nombreMascota by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -103,7 +99,7 @@ fun PantallaCambioContraseña(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Por favor, introduce la nueva contraseña.",
+            text = "Por favor, introduce el nombre de tu primera mascota.",
             fontSize = 16.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -113,19 +109,7 @@ fun PantallaCambioContraseña(
 
         // Reutilización de componente para los campos
 
-        CampoContraseña(
-            value = contraseña,
-            onValueChange = { contraseña = it },
-            placeholder = "Nueva contraseña"
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
-        CampoContraseña(
-            value = contraseñaVerificacion,
-            onValueChange = { contraseñaVerificacion = it },
-            placeholder = "Verificación de la  nueva contraseña"
-        )
-
+        CampoDato(value = nombreMascota, onValueChange = { nombreMascota = it }, placeholder = "Nombre de tu primera mascota")
         Spacer(modifier = Modifier.height(30.dp))
 
         Column(
@@ -142,7 +126,7 @@ fun PantallaCambioContraseña(
                     containerColor = colores.primary
                 )
             ) {
-                Text(text = "Cambiar contraseña")
+                Text(text = "Validar")
             }
 
             Text(text = "Cancelar cambio de contraseña",
@@ -156,62 +140,43 @@ fun PantallaCambioContraseña(
 }
 
 @Composable
-fun CampoContraseña(
+fun CampoDato(
     value: String,
     onValueChange: (String) -> Unit,
-    placeholder: String) {
-
-    var contraseñaVisible by remember { mutableStateOf(false) }
-
+    placeholder: String,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Row(
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
             modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    //.fillMaxWidth()
-                    .padding(16.dp),
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-                visualTransformation = if (contraseñaVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                decorationBox = { innerTextField ->
-                    Box {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = placeholder,
-                                style = TextStyle(fontSize = 16.sp, color = Color.Gray)
-                            )
-                        }
-                        innerTextField()
+                .fillMaxWidth()
+                .padding(16.dp),
+            textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
+            decorationBox = { innerTextField ->
+                Box {
+                    if (value.isEmpty()) {
+                        Text(
+                            text = placeholder,
+                            style = TextStyle(fontSize = 16.sp, color = Color.Gray)
+                        )
                     }
+                    innerTextField()
                 }
-            )
-            IconButton(
-                onClick = { contraseñaVisible = !contraseñaVisible }
-            ) {
-                Icon(
-                    imageVector = if (contraseñaVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                    contentDescription = "Icono ver contraseña",
-                )
             }
-        }
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CambioContraseñaPreview() {
+fun ValidacionCambioContraseñaPreview() {
     Sebastia_carlos_proyectoDITheme {
-        PantallaCambioContraseña(navController = rememberNavController())
+        PantallaValidacionCambioContraseña(navController = rememberNavController())
     }
 }

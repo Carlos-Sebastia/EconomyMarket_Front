@@ -58,25 +58,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class HomeUiState(
+data class CreacionUsuarioUIState(
     val mensajeBanner : String = "Hasta un 30% de descuento en productos seleccionados",
 )
 
-class HomeViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
+class CreacionUsuarioViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(CreacionUsuarioUIState())
+    val uiState : StateFlow<CreacionUsuarioUIState> = _uiState.asStateFlow()
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer { HomeViewModel() }
+            initializer { CreacionUsuarioViewModel() }
         }
     }
 }
 
 @Composable
-fun PantallaPrincipal(
+fun PantallaCreacionUsuario(
     navController : NavHostController,
-    viewModel : HomeViewModel = viewModel()
+    viewModel : CreacionUsuarioViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
@@ -297,6 +297,6 @@ fun CampoContraseña(
 @Composable
 fun CreacionUsarioPreview() {
     Sebastia_carlos_proyectoDITheme {
-        PantallaPrincipal(navController = rememberNavController())
+        PantallaCreacionUsuario(navController = rememberNavController())
     }
 }
