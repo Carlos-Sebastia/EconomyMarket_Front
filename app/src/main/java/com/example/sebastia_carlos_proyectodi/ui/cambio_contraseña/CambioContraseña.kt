@@ -1,6 +1,8 @@
 package com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -77,6 +79,7 @@ fun PantallaCambioContraseña(
     navController : NavHostController,
     viewModel : CambioContraseñaViewModel = viewModel()
 ) {
+    BackHandler(enabled = true) { }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
     val scrollState = rememberScrollState()
@@ -145,11 +148,16 @@ fun PantallaCambioContraseña(
                 Text(text = "Cambiar contraseña")
             }
 
-            Text(text = "Cancelar cambio de contraseña",
+            Text(text = "Cancelar",
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable {
+                        navController.navigate("login") {
+                            popUpTo("cambio_contraseña") { inclusive = true }
+                        }
+                    }
             )
         }
     }

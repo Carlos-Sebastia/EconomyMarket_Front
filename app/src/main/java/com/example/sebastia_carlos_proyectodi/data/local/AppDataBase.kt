@@ -4,13 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 @Database(entities = [
+    UsuarioEntity::class,
     ProductoEntity::class,
     TiendaEntity::class,
     ListaEntity::class],
-    version = 2, exportSchema = false)
+    version = 3, exportSchema = false)
+@TypeConverters(Utils::class)
 abstract class AppDataBase : RoomDatabase() {
+    abstract fun usuarioDao(): UsuarioDao
     abstract fun productoDao(): ProductoDao
     abstract fun tiendaDao(): TiendaDao
     abstract fun listaDao(): ListaDao

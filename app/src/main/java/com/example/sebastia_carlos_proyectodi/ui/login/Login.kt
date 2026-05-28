@@ -1,7 +1,9 @@
 package com.example.sebastia_carlos_proyectodi.ui.login
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,33 +56,19 @@ import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoD
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-
-data class LoginUiState(
-    val mensajeBanner : String = "Hasta un 30% de descuento en productos seleccionados",
-)
-
-class LoginViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState : StateFlow<LoginUiState> = _uiState.asStateFlow()
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer { LoginViewModel() }
-        }
-    }
-}
+import kotlinx.coroutines.launch
 
 @Composable
 fun PantallaLogin(
     navController : NavHostController,
-    viewModel : LoginViewModel = viewModel()
+    viewModel : LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // Estados para los campos de texto
-    var usuario by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var dni by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -120,15 +109,15 @@ fun PantallaLogin(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 BasicTextField(
-                    value = usuario,
-                    onValueChange = { usuario = it },
+                    value = dni,
+                    onValueChange = { dni = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
                     textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
                     decorationBox = { innerTextField ->
                         Box {
-                            if (usuario.isEmpty()) {
+                            if (dni.isEmpty()) {
                                 Text(
                                     text = "DNI",
                                     style = TextStyle(
@@ -168,8 +157,8 @@ fun PantallaLogin(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 BasicTextField(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = contrasena,
+                    onValueChange = { contrasena = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
@@ -177,7 +166,7 @@ fun PantallaLogin(
                     visualTransformation = PasswordVisualTransformation(),
                     decorationBox = { innerTextField ->
                         Box {
-                            if (password.isEmpty()) {
+                            if (contrasena.isEmpty()) {
                                 Text(
                                     text = "Contraseña",
                                     style = TextStyle(
@@ -200,6 +189,9 @@ fun PantallaLogin(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable {
+                    navController.navigate("validacion_cambio_contraseña")
+                }
         )
 
         Spacer(modifier = Modifier.height(50.dp))
@@ -210,10 +202,23 @@ fun PantallaLogin(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            val scope = rememberCoroutineScope()
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick = {},
+                onClick = {
+                    scope.launch {
+                        val esValido = viewModel.validarUsuario(dni, contrasena)
+                        if (esValido) {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        } else {
+                            contrasena = ""
+                            Toast.makeText(context,"Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colores.primary
@@ -227,6 +232,9 @@ fun PantallaLogin(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable {
+                        navController.navigate("creacion_usuario")
+                    }
             )
         }
     }

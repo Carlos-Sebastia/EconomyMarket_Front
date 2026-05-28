@@ -2,14 +2,19 @@ import android.content.Context
 import com.example.sebastia_carlos_proyectodi.data.local.AppDataBase
 import com.example.sebastia_carlos_proyectodi.data.remote.ProductoApiService
 import com.example.sebastia_carlos_proyectodi.data.remote.TiendaApiService // OJO: Verifica que se llame así
+import com.example.sebastia_carlos_proyectodi.data.remote.UsuarioApiService
 import com.example.sebastia_carlos_proyectodi.data.repository.ProductoRepositoryImpl
 import com.example.sebastia_carlos_proyectodi.data.repository.TiendaRepositoryImpl
+import com.example.sebastia_carlos_proyectodi.data.repository.UsuarioRepositoryImpl
 import com.example.sebastia_carlos_proyectodi.domain.repository.ProductoRepository
 import com.example.sebastia_carlos_proyectodi.domain.repository.TiendaRepository
+import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
+
+    val usuarioRepository: UsuarioRepository
     val productoRepository: ProductoRepository
     val tiendaRepository: TiendaRepository
 }
@@ -22,6 +27,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         .baseUrl(baseUrl)
         .build()
 
+    private val usuarioService: UsuarioApiService by lazy {
+        retrofit.create(UsuarioApiService::class.java)
+    }
+
     private val productoService: ProductoApiService by lazy {
         retrofit.create(ProductoApiService::class.java)
     }
@@ -32,6 +41,13 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     private val database: AppDataBase by lazy {
         AppDataBase.getDatabase(context)
+    }
+
+    override val usuarioRepository: UsuarioRepository by lazy {
+        UsuarioRepositoryImpl(
+            usuarioService,
+            database.usuarioDao()
+        )
     }
 
     override val productoRepository: ProductoRepository by lazy {

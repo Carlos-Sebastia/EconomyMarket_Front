@@ -78,6 +78,14 @@ import com.example.sebastia_carlos_proyectodi.domain.model.Producto
 import com.example.sebastia_carlos_proyectodi.ui.HomeViewModel
 import com.example.sebastia_carlos_proyectodi.ui.PantallaLista
 import com.example.sebastia_carlos_proyectodi.ui.PantallaPrincipal
+import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.CambioContraseñaViewModel
+import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaCambioContraseña
+import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaValidacionCambioContraseña
+import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.ValidacionCambioContraseñaViewModel
+import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.CreacionUsuarioViewModel
+import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.PantallaCreacionUsuario
+import com.example.sebastia_carlos_proyectodi.ui.login.LoginViewModel
+import com.example.sebastia_carlos_proyectodi.ui.login.PantallaLogin
 import com.example.sebastia_carlos_proyectodi.ui.productos.PantallaProductos
 import com.example.sebastia_carlos_proyectodi.ui.productos.ProductosViewModel
 import com.example.sebastia_carlos_proyectodi.ui.tarjeta.PantallaTarjeta
@@ -266,11 +274,18 @@ fun MyScaffold(
     }
 
 
-    val esPantallaTarjeta = currentRoute == "tarjeta"
+    val esPantallaCompleta = when (currentRoute) {
+        "tarjeta",
+        "login",
+        "creacion_usuario",
+        "validacion_cambio_contraseña",
+        "cambio_contraseña" -> true
+        else -> false
+    }
 
     Scaffold (
         topBar = {
-            if (!esPantallaTarjeta) {
+            if (!esPantallaCompleta) {
                 MyTopAppBar(
                     config = topBarConfig,
                     myDrawerState = myDrawerState,
@@ -279,12 +294,12 @@ fun MyScaffold(
             }
         },
         bottomBar = {
-            if (!esPantallaTarjeta) {
+            if (!esPantallaCompleta) {
                 MyBottomAppBar(navController = navController)
             }
         },
         floatingActionButton = {
-            if (!esPantallaTarjeta) {
+            if (!esPantallaCompleta) {
                 MyFAB(navController)
             }
         },
@@ -467,11 +482,35 @@ fun AppNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "login"
     ) {
 
         // Se crea un variable viewModel para cada composable para mantener el estado de cada uno
         // durante la navegación
+
+        // Pantalla login
+        composable("login") {
+            val loginViewModel : LoginViewModel = viewModel(factory = LoginViewModel.Factory)
+            PantallaLogin(navController, loginViewModel)
+        }
+
+        // Pantalla creación de usuario
+        composable("creacion_usuario") {
+            val creacionUsuarioViewModel : CreacionUsuarioViewModel = viewModel(factory = CreacionUsuarioViewModel.Factory)
+            PantallaCreacionUsuario(navController, creacionUsuarioViewModel)
+        }
+
+        // Pantalla validación cambio de contraseña
+        composable("validacion_cambio_contraseña") {
+            val validacionCambioContraseñaViewModel : ValidacionCambioContraseñaViewModel = viewModel(factory = ValidacionCambioContraseñaViewModel.Factory)
+            PantallaValidacionCambioContraseña(navController, validacionCambioContraseñaViewModel)
+        }
+
+        // Pantalla cambio de contraseña
+        composable("cambio_contraseña") {
+            val cambioContraseñaViewModel : CambioContraseñaViewModel = viewModel(factory = CambioContraseñaViewModel.Factory)
+            PantallaCambioContraseña(navController, cambioContraseñaViewModel)
+        }
 
         // Pantalla home
         composable("home") {

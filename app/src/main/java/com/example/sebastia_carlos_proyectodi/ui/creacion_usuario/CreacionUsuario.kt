@@ -1,6 +1,8 @@
 package com.example.sebastia_carlos_proyectodi.ui.creacion_usuario
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,6 +80,7 @@ fun PantallaCreacionUsuario(
     navController : NavHostController,
     viewModel : CreacionUsuarioViewModel = viewModel()
 ) {
+    BackHandler(enabled = true) { }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
     val scrollState = rememberScrollState()
@@ -200,6 +203,9 @@ fun PantallaCreacionUsuario(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable {
+                        navController.navigate("login")
+                    }
             )
         }
     }
