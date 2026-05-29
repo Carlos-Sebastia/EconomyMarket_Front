@@ -1,5 +1,6 @@
 package com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,44 +53,29 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoDITheme
+import com.example.sebastia_carlos_proyectodi.ui.componentes.CampoDato
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-
-data class ValidacionCambioContraseñaUiState(
-    val mensajeBanner : String = "Hasta un 30% de descuento en productos seleccionados",
-)
-
-class ValidacionCambioContraseñaViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(ValidacionCambioContraseñaUiState())
-    val uiState : StateFlow<ValidacionCambioContraseñaUiState> = _uiState.asStateFlow()
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer { ValidacionCambioContraseñaViewModel() }
-        }
-    }
-}
+import kotlinx.coroutines.launch
 
 @Composable
 fun PantallaValidacionCambioContraseña(
     navController : NavHostController,
-    viewModel : ValidacionCambioContraseñaViewModel = viewModel()
+    viewModel : CambioContraseñaViewModel = viewModel(factory = CambioContraseñaViewModel.Factory)
 ) {
     BackHandler(enabled = true) { }
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
-    val scrollState = rememberScrollState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // Estados para los campos de texto
+    var dni by remember { mutableStateOf("") }
     var nombreMascota by remember { mutableStateOf("") }
-
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colores.background)
-            .verticalScroll(scrollState)
             .padding(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -102,7 +89,7 @@ fun PantallaValidacionCambioContraseña(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Por favor, introduce el nombre de tu primera mascota.",
+            text = "Por favor, introduce tu DNI y el nombre de tu primera mascota.",
             fontSize = 16.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -112,6 +99,9 @@ fun PantallaValidacionCambioContraseña(
 
         // Reutilización de componente para los campos
 
+        CampoDato(value = dni, onValueChange = { dni = it }, placeholder = "DNI")
+        Spacer(modifier = Modifier.height(20.dp))
+
         CampoDato(value = nombreMascota, onValueChange = { nombreMascota = it }, placeholder = "Nombre de tu primera mascota")
         Spacer(modifier = Modifier.height(30.dp))
 
@@ -120,10 +110,22 @@ fun PantallaValidacionCambioContraseña(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            val scope = rememberCoroutineScope()
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick = {},
+                onClick = {
+                    scope.launch {
+                        val esValido = viewModel.validarMascota(dni, nombreMascota)
+                        if (esValido) {
+                            navController.navigate("cambio_contraseña")
+                        } else {
+                            nombreMascota = ""
+                            Toast.makeText(context,"Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+
+                        }
+                    }
+                },
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colores.primary
@@ -144,40 +146,6 @@ fun PantallaValidacionCambioContraseña(
                     }
             )
         }
-    }
-}
-
-@Composable
-fun CampoDato(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-            decorationBox = { innerTextField ->
-                Box {
-                    if (value.isEmpty()) {
-                        Text(
-                            text = placeholder,
-                            style = TextStyle(fontSize = 16.sp, color = Color.Gray)
-                        )
-                    }
-                    innerTextField()
-                }
-            }
-        )
     }
 }
 

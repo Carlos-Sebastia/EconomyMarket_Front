@@ -9,4 +9,10 @@ interface UsuarioApiService {
         @Query("dni") dni: String,
         @Query("contrasena") contrasena: String
     ): UsuarioDto?
+
+    @GET("login/validarMascota")
+    suspend fun validarMascota(
+        @Query("dni") dni: String,
+        @Query("mascota") mascota: String
+    ): UsuarioDto?
 }

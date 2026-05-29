@@ -81,7 +81,6 @@ import com.example.sebastia_carlos_proyectodi.ui.PantallaPrincipal
 import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.CambioContraseñaViewModel
 import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaCambioContraseña
 import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaValidacionCambioContraseña
-import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.ValidacionCambioContraseñaViewModel
 import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.CreacionUsuarioViewModel
 import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.PantallaCreacionUsuario
 import com.example.sebastia_carlos_proyectodi.ui.login.LoginViewModel
@@ -502,7 +501,7 @@ fun AppNavGraph(navController: NavHostController) {
 
         // Pantalla validación cambio de contraseña
         composable("validacion_cambio_contraseña") {
-            val validacionCambioContraseñaViewModel : ValidacionCambioContraseñaViewModel = viewModel(factory = ValidacionCambioContraseñaViewModel.Factory)
+            val validacionCambioContraseñaViewModel : CambioContraseñaViewModel = viewModel(factory = CambioContraseñaViewModel.Factory)
             PantallaValidacionCambioContraseña(navController, validacionCambioContraseñaViewModel)
         }
 

@@ -1,4 +1,4 @@
-package com.example.sebastia_carlos_proyectodi.ui.login
+package com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,12 +8,12 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.sebastia_carlos_proyectodi.MyApplication
 import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepository
 
-class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
+class CambioContraseñaViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
-    //Función para validar usuario
-    suspend fun validarUsuario(dni: String, contrasena: String) : Boolean {
-        Log.e("LoginViewModel", "Validando usuario: $dni, $contrasena")
-        return repository.validarUsuario(dni, contrasena)
+    //Función para validar mascota
+    suspend fun validarMascota(dni: String, mascota: String) : Boolean {
+        Log.e("LoginViewModel", "Validando dni y mascota: $dni, $mascota")
+        return repository.validarMascota(dni, mascota)
     }
 
     companion object {
@@ -21,7 +21,7 @@ class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MyApplication)
                 val repository = application.container.usuarioRepository
-                LoginViewModel(repository = repository)
+                CambioContraseñaViewModel(repository = repository)
             }
         }
     }

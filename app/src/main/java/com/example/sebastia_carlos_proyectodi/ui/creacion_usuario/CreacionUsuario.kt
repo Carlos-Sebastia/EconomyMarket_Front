@@ -59,6 +59,8 @@ import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoD
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import com.example.sebastia_carlos_proyectodi.ui.componentes.CampoDato
+import com.example.sebastia_carlos_proyectodi.ui.componentes.CampoContraseña
 
 data class CreacionUsuarioUIState(
     val mensajeBanner : String = "Hasta un 30% de descuento en productos seleccionados",
@@ -207,94 +209,6 @@ fun PantallaCreacionUsuario(
                         navController.navigate("login")
                     }
             )
-        }
-    }
-}
-
-@Composable
-fun CampoDato(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-            decorationBox = { innerTextField ->
-                Box {
-                    if (value.isEmpty()) {
-                        Text(
-                            text = placeholder,
-                            style = TextStyle(fontSize = 16.sp, color = Color.Gray)
-                        )
-                    }
-                    innerTextField()
-                }
-            }
-        )
-    }
-}
-
-
-@Composable
-fun CampoContraseña(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String) {
-
-    var contraseñaVisible by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    //.fillMaxWidth()
-                    .padding(16.dp),
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-                visualTransformation = if (contraseñaVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                decorationBox = { innerTextField ->
-                    Box {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = placeholder,
-                                style = TextStyle(fontSize = 16.sp, color = Color.Gray)
-                            )
-                        }
-                        innerTextField()
-                    }
-                }
-            )
-            IconButton(
-                onClick = { contraseñaVisible = !contraseñaVisible }
-            ) {
-                Icon(
-                    imageVector = if (contraseñaVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                    contentDescription = "Icono ver contraseña",
-                )
-            }
         }
     }
 }

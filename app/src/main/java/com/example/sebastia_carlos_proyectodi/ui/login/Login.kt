@@ -20,11 +20,14 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +55,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.sebastia_carlos_proyectodi.R
+import com.example.sebastia_carlos_proyectodi.ui.componentes.CampoContraseña
+import com.example.sebastia_carlos_proyectodi.ui.componentes.CampoDato
 import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoDITheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,100 +92,20 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Card para el nombre de usuario
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(10.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Icono Usuario",
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.Black
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                BasicTextField(
-                    value = dni,
-                    onValueChange = { dni = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-                    decorationBox = { innerTextField ->
-                        Box {
-                            if (dni.isEmpty()) {
-                                Text(
-                                    text = "DNI",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        color = Color.Gray
-                                    )
-                                )
-                            }
-                            innerTextField()
-                        }
-                    }
-                )
-            }
-        }
-
+        // Campo para el DNI
+        CampoDato(value = dni,
+            onValueChange = { dni = it },
+            placeholder = "DNI",
+            icon = Icons.Default.Person
+        )
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Card para la contraseña
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(10.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "Icono Contraseña",
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.Black
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                BasicTextField(
-                    value = contrasena,
-                    onValueChange = { contrasena = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-                    visualTransformation = PasswordVisualTransformation(),
-                    decorationBox = { innerTextField ->
-                        Box {
-                            if (contrasena.isEmpty()) {
-                                Text(
-                                    text = "Contraseña",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        color = Color.Gray
-                                    )
-                                )
-                            }
-                            innerTextField()
-                        }
-                    }
-                )
-            }
-        }
+        //Campo para la contraseña
+        CampoContraseña(value = contrasena,
+            onValueChange = { contrasena = it },
+            placeholder = "Contraseña",
+            icon = Icons.Default.Lock
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
