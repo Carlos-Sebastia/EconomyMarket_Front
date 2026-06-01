@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -99,10 +100,11 @@ fun PantallaValidacionCambioContraseña(
 
         // Reutilización de componente para los campos
 
-        CampoDato(value = dni, onValueChange = { dni = it }, placeholder = "DNI")
+        CampoDato(value = dni, onValueChange = { dni = it.uppercase() }, placeholder = "DNI")
         Spacer(modifier = Modifier.height(20.dp))
 
-        CampoDato(value = nombreMascota, onValueChange = { nombreMascota = it }, placeholder = "Nombre de tu primera mascota")
+
+        CampoDato(value = nombreMascota, onValueChange = { nombreMascota = it }, placeholder = "Nombre de tu primera mascota", keyboardCapitalization = KeyboardCapitalization.Words)
         Spacer(modifier = Modifier.height(30.dp))
 
         Column(
@@ -116,7 +118,7 @@ fun PantallaValidacionCambioContraseña(
                     .fillMaxWidth(),
                 onClick = {
                     scope.launch {
-                        val esValido = viewModel.validarMascota(dni, nombreMascota)
+                        val esValido = viewModel.validarMascota(dni.trim(), nombreMascota.trim())
                         if (esValido) {
                             navController.navigate("cambio_contraseña")
                         } else {

@@ -1,5 +1,6 @@
 package com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +62,17 @@ import com.example.sebastia_carlos_proyectodi.ui.componentes.CampoContraseña
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+fun esContrasenaSegura(contrasena: String): Boolean {
+    val longitud = contrasena.length >= 8
+    val mayuscula = contrasena.any { it.isUpperCase() }
+    val minuscula = contrasena.any { it.isLowerCase() }
+    val numero = contrasena.any { it.isDigit() }
+    val simbolo = contrasena.any { !it.isLetterOrDigit() }
+
+    return longitud && mayuscula && minuscula && numero && simbolo
+}
 
 @Composable
 fun PantallaCambioContraseña(
@@ -68,17 +81,16 @@ fun PantallaCambioContraseña(
 ) {
     BackHandler(enabled = true) { }
     val colores = MaterialTheme.colorScheme
-    val scrollState = rememberScrollState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // Estados para los campos de texto
-    var contraseña by remember { mutableStateOf("") }
-    var contraseñaVerificacion by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    var contrasenaVerificacion by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colores.background)
-            .verticalScroll(scrollState)
             .padding(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -103,16 +115,22 @@ fun PantallaCambioContraseña(
         // Reutilización de componente para los campos
 
         CampoContraseña(
-            value = contraseña,
-            onValueChange = { contraseña = it },
+            value = contrasena,
+            onValueChange = { contrasena = it },
             placeholder = "Nueva contraseña"
         )
         Spacer(modifier = Modifier.height(20.dp))
 
         CampoContraseña(
-            value = contraseñaVerificacion,
-            onValueChange = { contraseñaVerificacion = it },
+            value = contrasenaVerificacion,
+            onValueChange = { contrasenaVerificacion = it },
             placeholder = "Verificación de la  nueva contraseña"
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = "* La contraseña debe tener como mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.",
+            fontSize = 12.sp,
         )
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -122,10 +140,33 @@ fun PantallaCambioContraseña(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            val scope = rememberCoroutineScope()
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick = {},
+                onClick = {
+                    scope.launch {
+                        if (contrasena == contrasenaVerificacion) {
+                            if (esContrasenaSegura(contrasena)) {
+                                val esValido = viewModel.cambiarContrasena(contrasena)
+                                    if (esValido) {
+                                        navController.navigate("login") { popUpTo("login") { inclusive = true } }
+                                        Toast.makeText(context, "Contraseña cambiada correctamente.",Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                                else {
+                                    contrasena = ""
+                                    contrasenaVerificacion = ""
+                                    Toast.makeText(context,"La contraseña no cumple los requisitos de seguridad.", Toast.LENGTH_LONG).show()
+                            }
+                        } else {
+                            contrasena = ""
+                            contrasenaVerificacion = ""
+                            Toast.makeText(context,"Las contraseñas no coinciden", Toast.LENGTH_LONG).show()
+
+                        }
+                    }
+                },
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colores.primary

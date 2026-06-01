@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -27,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -37,7 +40,9 @@ fun CampoDato(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    icon: ImageVector? = null
+    icon: ImageVector? = null,
+    keyboardCapitalization: KeyboardCapitalization = KeyboardCapitalization.None,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -67,6 +72,10 @@ fun CampoDato(
                     .weight(1f)
                     .padding(vertical = 16.dp),
                 textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = keyboardCapitalization,
+                    keyboardType = keyboardType
+                ),
                 decorationBox = { innerTextField ->
                     Box {
                         if (value.isEmpty()) {

@@ -133,10 +133,13 @@ fun PantallaLogin(
                     .fillMaxWidth(),
                 onClick = {
                     scope.launch {
-                        val esValido = viewModel.validarUsuario(dni, contrasena)
+                        val esValido = viewModel.validarUsuario(dni.trim(), contrasena)
                         if (esValido) {
                             navController.navigate("home") {
-                                popUpTo("login") { inclusive = true }
+                                //Se limpia la pila de pantallas desde la pantalla raíz
+                                popUpTo(navController.graph.id) { inclusive = true }
+                                //Evita que se creen varias capas de la misma pantalla
+                                launchSingleTop = true
                             }
                         } else {
                             contrasena = ""

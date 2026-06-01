@@ -10,10 +10,21 @@ import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepositor
 
 class CambioContraseñaViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
+    var dniValidado: String = ""
+        private set
+
     //Función para validar mascota
     suspend fun validarMascota(dni: String, mascota: String) : Boolean {
         Log.e("LoginViewModel", "Validando dni y mascota: $dni, $mascota")
-        return repository.validarMascota(dni, mascota)
+        val esValido = repository.validarMascota(dni, mascota)
+        if (esValido) {
+            dniValidado = dni
+        }
+        return esValido
+    }
+
+    suspend fun cambiarContrasena(nuevaContrasena: String): Boolean {
+        return repository.cambiarContrasena(dniValidado, nuevaContrasena)
     }
 
     companion object {
