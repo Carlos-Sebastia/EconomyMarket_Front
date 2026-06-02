@@ -164,7 +164,7 @@ fun PantallaCreacionUsuario(
         CampoDato(value = apellidos, onValueChange = { apellidos = it }, placeholder = "Apellidos", keyboardCapitalization = KeyboardCapitalization.Words)
         Spacer(modifier = Modifier.height(20.dp))
 
-        CampoDato(value = fechaNacimiento, onValueChange = { fechaNacimiento = it }, placeholder = "Fecha de nacimiento (dd/mm/aaaa)", keyboardType = KeyboardType.Number)
+        CampoDato(value = fechaNacimiento, onValueChange = { fechaNacimiento = it }, placeholder = "Fecha de nacimiento (dd-mm-aaaa)", keyboardType = KeyboardType.Number)
         Spacer(modifier = Modifier.height(20.dp))
 
         CampoDato(value = email, onValueChange = { email = it }, placeholder = "Correo electrónico", keyboardType = KeyboardType.Email)

@@ -26,6 +26,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -71,9 +72,10 @@ fun PantallaLogin(
     val colores = MaterialTheme.colorScheme
     val context = androidx.compose.ui.platform.LocalContext.current
 
-    // Estados para los campos de texto
+    // Estados
     var dni by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -127,23 +129,28 @@ fun PantallaLogin(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            val scope = rememberCoroutineScope()
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
                 onClick = {
-                    scope.launch {
-                        val esValido = viewModel.validarUsuario(dni.trim(), contrasena)
-                        if (esValido) {
-                            navController.navigate("home") {
-                                //Se limpia la pila de pantallas desde la pantalla raíz
-                                popUpTo(navController.graph.id) { inclusive = true }
-                                //Evita que se creen varias capas de la misma pantalla
-                                launchSingleTop = true
+                    if (dni.isBlank() || contrasena.isBlank()) {
+                        Toast.makeText(context, "Rellena todos los campos", Toast.LENGTH_LONG).show()
+                    } else {
+                        scope.launch {
+                            try {
+                                val esValido = viewModel.validarUsuario(dni.trim(), contrasena)
+                                if (esValido) {
+                                    navController.navigate("home") {
+                                        popUpTo(navController.graph.id) { inclusive = true }
+                                        launchSingleTop = true
+                                    }
+                                } else {
+                                    contrasena = ""
+                                    Toast.makeText(context, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                                }
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Error de conexión", Toast.LENGTH_SHORT).show()
                             }
-                        } else {
-                            contrasena = ""
-                            Toast.makeText(context,"Credenciales incorrectas", Toast.LENGTH_SHORT).show()
                         }
                     }
                 },
@@ -154,7 +161,6 @@ fun PantallaLogin(
             ) {
                 Text(text = "Iniciar sesión")
             }
-
             Text(text = "Crear una cuenta",
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,

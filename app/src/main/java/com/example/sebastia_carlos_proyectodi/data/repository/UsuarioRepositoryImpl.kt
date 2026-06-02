@@ -4,9 +4,13 @@ import android.util.Log
 import com.example.sebastia_carlos_proyectodi.data.local.UsuarioDao
 import com.example.sebastia_carlos_proyectodi.data.local.UsuarioEntity
 import com.example.sebastia_carlos_proyectodi.data.remote.UsuarioApiService
+import com.example.sebastia_carlos_proyectodi.data.toDomain
 import com.example.sebastia_carlos_proyectodi.data.toEntity
+import com.example.sebastia_carlos_proyectodi.domain.model.Usuario
 import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class UsuarioRepositoryImpl(
@@ -21,6 +25,7 @@ class UsuarioRepositoryImpl(
 
             if (usuarioDto != null) {
                 // 2. Si es válido, guardamos los datos públicos en la DB local
+                usuarioDao.borrarUsuarios()
                 usuarioDao.insertarUsuario(usuarioDto.toEntity())
                 true
             } else {
@@ -40,7 +45,8 @@ class UsuarioRepositoryImpl(
             Log.e("Validación mascota", "DNI y mascota obtenidos: $dni, $usuarioDto")
 
             if (usuarioDto != null) {
-                // 2. Si es válido, guardamos los datos públicos en la DB local
+                // 2. Si es válido, borramos la información de usuarios anteriores y guardamos los datos públicos en la DB local
+                usuarioDao.borrarUsuarios()
                 usuarioDao.insertarUsuario(usuarioDto.toEntity())
                 true
             } else {
@@ -67,17 +73,10 @@ class UsuarioRepositoryImpl(
     = withContext(Dispatchers.IO) {
         try {
             Log.e("Creacion usuario", "Creando usuario: $dni, $nombre, $apellidos, $fechaNacimiento, $email, $mascota, $contrasena")
-            val usuarioCreado = api.crearUsuario(dni, nombre, apellidos, fechaNacimiento, email, mascota, contrasena)
-            if (usuarioCreado) {
-                // 2. Si es válido, guardamos los datos públicos en la DB local
-                val nuevaEntidad = UsuarioEntity(
-                    dni = dni,
-                    nombre = nombre,
-                    apellidos = apellidos,
-                    email = email,
-                    fechaNacimiento = fechaNacimiento,
-                )
-                usuarioDao.insertarUsuario(nuevaEntidad)
+            val exito = api.crearUsuario(dni, nombre, apellidos, fechaNacimiento, email, mascota, contrasena)
+            if (exito) {
+                usuarioDao.borrarUsuarios()
+                usuarioDao.insertarUsuario(UsuarioEntity(dni, nombre, apellidos, email, fechaNacimiento))
                 true
             } else {
                 false
@@ -86,5 +85,9 @@ class UsuarioRepositoryImpl(
             Log.e("LoginError", "Error al crear usuario: ${e.message}")
             false
         }
+    }
+
+    override fun obtenerUsuarioLogueado(): Flow<Usuario?> {
+        return usuarioDao.obtenerUsuarioLogueado().map { it?.toDomain() }
     }
 }

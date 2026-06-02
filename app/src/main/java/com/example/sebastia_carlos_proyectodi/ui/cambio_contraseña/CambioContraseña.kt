@@ -181,7 +181,7 @@ fun PantallaCambioContraseña(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        navController.navigate("login")
+                        navController.popBackStack("validacion_cambio_contraseña", inclusive = true)
                     }
             )
         }

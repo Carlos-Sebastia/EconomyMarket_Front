@@ -136,15 +136,14 @@ fun PantallaValidacionCambioContraseña(
                 Text(text = "Validar")
             }
 
-            Text(text = "Cancelar",
+            Text(text = "Volver atrás",
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        navController.navigate("login") {
-                            popUpTo("validacion_cambio_contraseña") { inclusive = true }
-                        }
+                        navController.popBackStack()
+
                     }
             )
         }

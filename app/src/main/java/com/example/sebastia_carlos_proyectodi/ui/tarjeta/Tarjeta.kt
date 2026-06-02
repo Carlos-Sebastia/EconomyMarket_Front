@@ -46,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.sebastia_carlos_proyectodi.R
+import com.example.sebastia_carlos_proyectodi.ui.cuenta_usuario.CuentaUsuarioViewModel
 import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoDITheme
 
 data class TarjetaUiState (
@@ -56,12 +57,14 @@ data class TarjetaUiState (
 @Composable
 fun PantallaTarjeta(
     navController : NavHostController,
-    viewModel : TarjetaViewModel
+    viewModel : TarjetaViewModel = viewModel(factory = TarjetaViewModel.Factory),
 ) {
+    val usuario by viewModel.usuarioState.collectAsStateWithLifecycle()
+    var mostrarAvisoLegal by rememberSaveable { mutableStateOf(true) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
 
-    var mostrarAvisoLegal by rememberSaveable { mutableStateOf(true) }
+
 
 
     Box(
@@ -118,7 +121,7 @@ fun PantallaTarjeta(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .height(200.dp),
+                    .height(225.dp),
                 shape = MaterialTheme.shapes.large,
                 elevation = CardDefaults.cardElevation(15.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -140,8 +143,13 @@ fun PantallaTarjeta(
                             contentDescription = "logo tarjeta",
                             modifier = Modifier.size(100.dp)
                         )
+
                         Text(
-                            text = "Carlos Sebastiá\n20924519C",
+                            text = usuario?.nombre ?: "...",
+                            textAlign = TextAlign.Center,
+                        )
+                        Text(
+                            text = usuario?.dni ?: "...",
                             textAlign = TextAlign.Center,
                         )
                     }
