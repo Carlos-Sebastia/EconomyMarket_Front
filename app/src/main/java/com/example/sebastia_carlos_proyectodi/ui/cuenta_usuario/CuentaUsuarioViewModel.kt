@@ -1,5 +1,6 @@
-package com.example.sebastia_carlos_proyectodi.ui.tarjeta
+package com.example.sebastia_carlos_proyectodi.ui.cuenta_usuario
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,18 +9,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.sebastia_carlos_proyectodi.MyApplication
 import com.example.sebastia_carlos_proyectodi.domain.model.Usuario
 import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepository
-import com.example.sebastia_carlos_proyectodi.ui.HomeViewModel
-import com.example.sebastia_carlos_proyectodi.ui.cuenta_usuario.CuentaUsuarioViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 
-class TarjetaViewModel(private val repository: UsuarioRepository): ViewModel() {
-    private val _uiState = MutableStateFlow(TarjetaUiState())
-    val uiState: StateFlow<TarjetaUiState> = _uiState.asStateFlow()
+class CuentaUsuarioViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
     val usuarioState: StateFlow<Usuario?> = repository.obtenerUsuarioLogueado()
         .stateIn(
@@ -29,20 +23,12 @@ class TarjetaViewModel(private val repository: UsuarioRepository): ViewModel() {
             initialValue = null
         )
 
-    fun onTicketDigitalChanged(nuevoValor: Boolean) {
-        _uiState.update { it.copy(ticketDigital = nuevoValor) }
-    }
-
-    fun onEconomyPay(nuevoValor: Boolean) {
-        _uiState.update { it.copy(economyPay = nuevoValor) }
-    }
-
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MyApplication)
                 val repository = application.container.usuarioRepository
-                TarjetaViewModel(repository = repository)
+                CuentaUsuarioViewModel(repository = repository)
             }
         }
     }

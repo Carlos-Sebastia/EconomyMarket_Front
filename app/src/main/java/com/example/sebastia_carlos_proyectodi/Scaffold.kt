@@ -1,60 +1,21 @@
 package com.example.sebastia_carlos_proyectodi
 
+import android.icu.number.Scale.none
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import  androidx.compose.foundation.Image
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Inbox
-import androidx.compose.material.icons.filled.ListAlt
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,7 +23,6 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -74,10 +34,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.sebastia_carlos_proyectodi.domain.model.Producto
+import androidx.navigation.compose.rememberNavController
 import com.example.sebastia_carlos_proyectodi.ui.HomeViewModel
 import com.example.sebastia_carlos_proyectodi.ui.PantallaLista
 import com.example.sebastia_carlos_proyectodi.ui.PantallaPrincipal
+import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.CambioContraseñaViewModel
+import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaCambioContraseña
+import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaValidacionCambioContraseña
+import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.CreacionUsuarioViewModel
+import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.PantallaCreacionUsuario
+import com.example.sebastia_carlos_proyectodi.ui.cuenta_usuario.PantallaCuentaUsuario
+import com.example.sebastia_carlos_proyectodi.ui.login.LoginViewModel
+import com.example.sebastia_carlos_proyectodi.ui.login.PantallaLogin
 import com.example.sebastia_carlos_proyectodi.ui.productos.PantallaProductos
 import com.example.sebastia_carlos_proyectodi.ui.productos.ProductosViewModel
 import com.example.sebastia_carlos_proyectodi.ui.tarjeta.PantallaTarjeta
@@ -87,103 +55,141 @@ import com.example.sebastia_carlos_proyectodi.ui.tiendas.TiendasViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomScaffold(navController: NavHostController) {
+    AppNavGraph(navController = navController)
+}
 
-    val corutina = rememberCoroutineScope()
-    val myDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+@Composable
+fun AppNavGraph(navController: NavHostController) {
+    val activity = LocalActivity.current as ComponentActivity
+    
+    val resetPasswordViewModel: CambioContraseñaViewModel = viewModel(
+        viewModelStoreOwner = activity,
+        factory = CambioContraseñaViewModel.Factory
+    )
+
+    val tarjetaViewModel: TarjetaViewModel = viewModel(
+        viewModelStoreOwner = activity,
+        factory = TarjetaViewModel.Factory
+    )
+
+    NavHost(
+        navController = navController,
+        startDestination = "login"
+    ) {
+        // Pantallas sin Scaffold
+        composable("login") {
+            PantallaLogin(navController)
+        }
+        composable("creacion_usuario") {
+            PantallaCreacionUsuario(navController)
+        }
+        composable("validacion_cambio_contraseña") {
+            PantallaValidacionCambioContraseña(navController, resetPasswordViewModel)
+        }
+        composable("cambio_contraseña") {
+            PantallaCambioContraseña(navController, resetPasswordViewModel)
+        }
+        composable("tarjeta") { PantallaTarjeta(navController, tarjetaViewModel) }
+
+
+        // Pantallas con Scaffold
+        composable("home") { MainAppContainer(navController, "home") }
+        composable("productos") { MainAppContainer(navController, "productos") }
+        composable("tiendas") { MainAppContainer(navController, "tiendas") }
+        composable("lista") { MainAppContainer(navController, "lista") }
+        composable("cuenta") { MainAppContainer(navController, "cuenta") }
+    }
+}
+
+@Composable
+fun MainAppContainer(rootNavController: NavHostController, startRoute: String) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val activity = LocalActivity.current as ComponentActivity
+    
+    // ViewModels necesarios para las pantallas del Scaffold
+    val productosViewModel: ProductosViewModel = viewModel(
+        viewModelStoreOwner = activity,
+        factory = ProductosViewModel.Factory
+    )
+    val tiendasViewModel: TiendasViewModel = viewModel(
+        viewModelStoreOwner = activity,
+        factory = TiendasViewModel.Factory
+    )
 
     MyModalDrawer(
-        navController = navController,
-        drawerState = myDrawerState,
-        contenido = {
-            MyScaffold(myDrawerState, navController)
+        navController = rootNavController,
+        drawerState = drawerState
+    ) {
+        val navBackStackEntry by rootNavController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route ?: startRoute
+
+        val topBarConfig = when (currentRoute) {
+            "home" -> TopBarConfig("EconomyMarket", FontFamily(Font(R.font.jumpswinter)), 20.sp, MaterialTheme.colorScheme.primary)
+            "tiendas" -> TopBarConfig("Tiendas", FontFamily(Font(R.font.bebas_regular)), 30.sp, MaterialTheme.colorScheme.onSecondary)
+            "productos" -> TopBarConfig("Productos", FontFamily(Font(R.font.bebas_regular)), 30.sp, MaterialTheme.colorScheme.onSecondary)
+            "lista" -> TopBarConfig("Mi Lista", FontFamily(Font(R.font.bebas_regular)), 30.sp, MaterialTheme.colorScheme.onSecondary)
+            "cuenta" -> TopBarConfig("Cuenta de usuario", FontFamily(Font(R.font.bebas_regular)), 30.sp, MaterialTheme.colorScheme.onSecondary)
+            else -> TopBarConfig("", null, 20.sp, Color.Transparent)
         }
+
+        Scaffold(
+            topBar = { MyTopAppBar(topBarConfig, drawerState, rootNavController) },
+            bottomBar = { MyBottomAppBar(rootNavController) },
+            floatingActionButton = { MyFAB(rootNavController) }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                // Aquí cargamos directamente la pantalla correspondiente según la ruta del rootNavController
+                when (currentRoute) {
+                    "home" -> PantallaPrincipal(rootNavController)
+                    "productos" -> PantallaProductos(rootNavController, productosViewModel)
+                    "tiendas" -> PantallaTiendas(rootNavController, tiendasViewModel)
+                    "lista" -> PantallaLista(rootNavController, productosViewModel)
+                    "cuenta" -> PantallaCuentaUsuario(rootNavController)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MyModalDrawer(navController: NavHostController, drawerState: DrawerState, contenido: @Composable () -> Unit) {
+    val corutina = rememberCoroutineScope()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
+                NavBarHeader()
+                Column(modifier = Modifier.padding(15.dp).fillMaxHeight()) {
+                    NavigationItem("Inicio", Icons.Default.Home) { 
+                        navController.navigate("home"); corutina.launch { drawerState.close() } 
+                    }
+                    NavigationItem("Tiendas", Icons.Default.Place) { 
+                        navController.navigate("tiendas"); corutina.launch { drawerState.close() } 
+                    }
+                    NavigationItem("Cuenta de usuario", Icons.Default.PersonPin) {
+                        navController.navigate("cuenta"); corutina.launch { drawerState.close() }
+                    }
+                    NavigationItem("Cerrar menú", Icons.AutoMirrored.Filled.ArrowBack) {
+                        corutina.launch { drawerState.close() }
+                    }
+                }
+            }
+        },
+        content = contenido
     )
 }
 
 @Composable
-fun MyModalDrawer(
-    navController : NavHostController,
-    drawerState: DrawerState,
-    contenido : @Composable () -> Unit
-) {
-    val colores = MaterialTheme.colorScheme
-    val corutina = rememberCoroutineScope()
-    val sections = listOf(
-        "Inicio",
-        "Tiendas",
-        "Ajustes"
+fun NavigationItem(text: String, icon: ImageVector, onClick: () -> Unit) {
+    NavigationDrawerItem(
+        label = { Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, contentDescription = null); Spacer(Modifier.width(10.dp)); Text(text)
+        }},
+        selected = false,
+        onClick = onClick
     )
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = true,
-        drawerContent = {
-            ModalDrawerSheet(
-                drawerTonalElevation = 100.dp,
-                drawerContainerColor = MaterialTheme.colorScheme.background,
-                modifier = Modifier.clickable {
-                    corutina.launch {
-                        drawerState.close()
-                    }
-                }
-            ) {
-                NavBarHeader()
-                Column(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .background(colores.background)
-                ) {
-                    sections.forEach { item ->
-                        val icono = when (item) {
-                            "Inicio" -> Icons.Default.Home
-                            "Tiendas" -> Icons.Default.Place
-                            "Ajustes" -> Icons.Default.Settings
-                            else -> Icons.Default.Close
-                        }
-                        NavigationDrawerItem(
-
-                            label = {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(8.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = icono,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onBackground
-                                    )
-                                    Text(
-                                        text = item,
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    )
-                                }
-                            },
-                            selected = false,
-                            onClick = {
-                                when (item) {
-                                    "Inicio" -> navController.navigate("home")
-                                    "Tiendas" -> navController.navigate("tiendas")
-                                    else -> null
-                                }
-                                corutina.launch {
-                                    drawerState.apply {
-                                        if (isClosed) open() else close()
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    ) {
-        contenido()
-    }
 }
 
 @Composable
@@ -215,92 +221,8 @@ data class TopBarConfig(
     val fontFamily: FontFamily? = null,
     val fontSize: TextUnit,
     val color : Color = Color.Unspecified,
-    val actions : @Composable (() -> Unit)? = null,
-
-
-)
-
-@Composable
-fun MyScaffold(
-    myDrawerState : DrawerState,
-    navController : NavHostController
-) {
-    val colores = MaterialTheme.colorScheme
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    val topBarConfig = when (currentRoute) {
-        "home" ->
-            TopBarConfig(
-                title = "EconomyMarket",
-                fontFamily = FontFamily(Font(R.font.jumpswinter)),
-                color = colores.primary,
-                fontSize = 20.sp
-            )
-
-        "tiendas" ->
-            TopBarConfig(
-                title = "Tiendas",
-                fontFamily = FontFamily(Font(R.font.bebas_regular)),
-                color = colores.onSecondary,
-                fontSize = 30.sp
-            )
-
-        "productos" ->
-            TopBarConfig(
-                title = "Productos",
-                fontFamily = FontFamily(Font(R.font.bebas_regular)),
-                color = colores.onSecondary,
-                fontSize = 30.sp
-            )
-
-        "lista" ->
-            TopBarConfig(
-                title = "Mi Lista",
-                fontFamily = FontFamily(Font(R.font.bebas_regular)),
-                color = colores.onSecondary,
-                fontSize = 30.sp
-            )
-
-        else -> TopBarConfig(title = "", fontSize = 20.sp)
-    }
-
-
-    val esPantallaTarjeta = currentRoute == "tarjeta"
-
-    Scaffold (
-        topBar = {
-            if (!esPantallaTarjeta) {
-                MyTopAppBar(
-                    config = topBarConfig,
-                    myDrawerState = myDrawerState,
-                    navController = navController
-                )
-            }
-        },
-        bottomBar = {
-            if (!esPantallaTarjeta) {
-                MyBottomAppBar(navController = navController)
-            }
-        },
-        floatingActionButton = {
-            if (!esPantallaTarjeta) {
-                MyFAB(navController)
-            }
-        },
-        content = { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                AppNavGraph(navController = navController)
-            }
-        }
+    val actions : @Composable (() -> Unit)? = null
     )
-}
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -403,7 +325,6 @@ fun MyBottomAppBar(navController : NavHostController) {
 @Composable
 fun IconoBotonBottomBar(icono : ImageVector, texto : String, navController : NavHostController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
         IconButton(
             onClick = {
                 when (texto) {
@@ -419,6 +340,7 @@ fun IconoBotonBottomBar(icono : ImageVector, texto : String, navController : Nav
         Text(texto)
     }
 }
+
 
 @Composable
 fun MyFAB(navController: NavHostController) {
@@ -453,53 +375,6 @@ fun MyFAB(navController: NavHostController) {
                     strokeWidth = 3.dp,
                 )
             }
-        }
-    }
-}
-@Composable
-fun AppNavGraph(navController: NavHostController) {
-
-    val activity = LocalActivity.current as ComponentActivity
-    val productosViewModel: ProductosViewModel = viewModel (
-        viewModelStoreOwner = activity,
-        factory = ProductosViewModel.Factory
-    )
-
-    NavHost(
-        navController = navController,
-        startDestination = "home"
-    ) {
-
-        // Se crea un variable viewModel para cada composable para mantener el estado de cada uno
-        // durante la navegación
-
-        // Pantalla home
-        composable("home") {
-            val homeViewModel : HomeViewModel = viewModel(factory = HomeViewModel.Factory)
-            PantallaPrincipal(navController, homeViewModel)
-        }
-
-        // Pantalla productos
-        composable("productos") {
-            val productosViewModel : ProductosViewModel = viewModel(factory = ProductosViewModel.Factory)
-            PantallaProductos(navController, productosViewModel)
-        }
-
-        // Pantalla tiendas
-        composable("tiendas") {
-            val tiendasViewModel : TiendasViewModel = viewModel(factory = TiendasViewModel.Factory)
-            PantallaTiendas(navController, tiendasViewModel)
-        }
-
-        // Pantalla tarjeta
-        composable("tarjeta") {
-            val tarjetaViewModel : TarjetaViewModel = viewModel(factory = TarjetaViewModel.Factory)
-            PantallaTarjeta(navController, tarjetaViewModel)
-        }
-
-        //Pantalla lista
-        composable("lista") {
-            PantallaLista(navController, productosViewModel)
         }
     }
 }

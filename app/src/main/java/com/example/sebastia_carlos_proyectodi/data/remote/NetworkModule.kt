@@ -11,12 +11,4 @@ object RetroditInstance {
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
         .build()
-
-    val productoService: ProductoApiService by lazy {
-        retrofit.create(ProductoApiService::class.java)
-    }
-
-    val tiendaService: TiendaApiService by lazy {
-        retrofit.create(TiendaApiService::class.java)
-    }
 }

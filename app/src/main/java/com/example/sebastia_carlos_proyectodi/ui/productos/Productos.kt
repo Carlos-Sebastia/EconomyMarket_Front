@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -42,6 +43,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -113,6 +115,7 @@ fun PantallaProductos(
                     ListaProductosFiltrada(
                         lista = listaFiltrada,
                         idsEnLista = uiState.idsEnLista,
+                        categoriaSeleccionada = uiState.categoriaSeleccionada,
                         onUpdateItem = { producto, isInList ->
                             viewModel.updateListaItems(producto, isInList) }
                     )
@@ -294,9 +297,18 @@ fun ItemProducto(
 fun ListaProductosFiltrada(
     lista : List<Producto>,
     idsEnLista: List<Long>,
+    categoriaSeleccionada: String?,
     onUpdateItem: (Producto, Boolean) -> Unit
     ) {
+
+    //Volver arriba de la columna al cambiar de categoría de productos
+    val gridState = rememberLazyGridState()
+    LaunchedEffect(categoriaSeleccionada) {
+        gridState.animateScrollToItem(0)
+    }
+
     LazyVerticalGrid(
+        state = gridState,
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize(),
