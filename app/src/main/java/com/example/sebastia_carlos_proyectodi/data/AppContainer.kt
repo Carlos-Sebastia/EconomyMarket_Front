@@ -1,11 +1,14 @@
 import android.content.Context
 import com.example.sebastia_carlos_proyectodi.data.local.AppDataBase
 import com.example.sebastia_carlos_proyectodi.data.remote.ProductoApiService
-import com.example.sebastia_carlos_proyectodi.data.remote.TiendaApiService // OJO: Verifica que se llame así
+import com.example.sebastia_carlos_proyectodi.data.remote.TiendaApiService
 import com.example.sebastia_carlos_proyectodi.data.remote.UsuarioApiService
+import com.example.sebastia_carlos_proyectodi.data.remote.NotificacionApiService
 import com.example.sebastia_carlos_proyectodi.data.repository.ProductoRepositoryImpl
 import com.example.sebastia_carlos_proyectodi.data.repository.TiendaRepositoryImpl
 import com.example.sebastia_carlos_proyectodi.data.repository.UsuarioRepositoryImpl
+import com.example.sebastia_carlos_proyectodi.data.repository.NotificacionRepositoryImpl
+import com.example.sebastia_carlos_proyectodi.domain.repository.NotificacionRepository
 import com.example.sebastia_carlos_proyectodi.domain.repository.ProductoRepository
 import com.example.sebastia_carlos_proyectodi.domain.repository.TiendaRepository
 import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepository
@@ -17,6 +20,7 @@ interface AppContainer {
     val usuarioRepository: UsuarioRepository
     val productoRepository: ProductoRepository
     val tiendaRepository: TiendaRepository
+    val notificacionRepository: NotificacionRepository
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -37,6 +41,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     private val tiendaService: TiendaApiService by lazy {
         retrofit.create(TiendaApiService::class.java)
+    }
+
+    private val notificacionService: NotificacionApiService by lazy {
+        retrofit.create(NotificacionApiService::class.java)
     }
 
     private val database: AppDataBase by lazy {
@@ -64,6 +72,12 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
             tiendaService,
             database.tiendaDao()
 
+        )
+    }
+
+    override val notificacionRepository: NotificacionRepository by lazy {
+        NotificacionRepositoryImpl(
+            notificacionService
         )
     }
 }

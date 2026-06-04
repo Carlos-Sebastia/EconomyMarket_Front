@@ -26,15 +26,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.sebastia_carlos_proyectodi.data.formatearFechaNotificacion
 import com.example.sebastia_carlos_proyectodi.ui.HomeViewModel
 import com.example.sebastia_carlos_proyectodi.ui.PantallaLista
 import com.example.sebastia_carlos_proyectodi.ui.PantallaPrincipal
@@ -46,6 +49,7 @@ import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.PantallaCreaci
 import com.example.sebastia_carlos_proyectodi.ui.cuenta_usuario.PantallaCuentaUsuario
 import com.example.sebastia_carlos_proyectodi.ui.login.LoginViewModel
 import com.example.sebastia_carlos_proyectodi.ui.login.PantallaLogin
+import com.example.sebastia_carlos_proyectodi.ui.notificaciones.NotificacionViewModel
 import com.example.sebastia_carlos_proyectodi.ui.productos.PantallaProductos
 import com.example.sebastia_carlos_proyectodi.ui.productos.ProductosViewModel
 import com.example.sebastia_carlos_proyectodi.ui.tarjeta.PantallaTarjeta
@@ -109,6 +113,10 @@ fun MainAppContainer(rootNavController: NavHostController, startRoute: String) {
     val activity = LocalActivity.current as ComponentActivity
     
     // ViewModels necesarios para las pantallas del Scaffold
+    val notificacionViewModel: NotificacionViewModel = viewModel(
+        viewModelStoreOwner = activity,
+        factory = NotificacionViewModel.Factory
+    )
     val productosViewModel: ProductosViewModel = viewModel(
         viewModelStoreOwner = activity,
         factory = ProductosViewModel.Factory
@@ -135,7 +143,7 @@ fun MainAppContainer(rootNavController: NavHostController, startRoute: String) {
         }
 
         Scaffold(
-            topBar = { MyTopAppBar(topBarConfig, drawerState, rootNavController) },
+            topBar = { MyTopAppBar(topBarConfig, drawerState, rootNavController, notificacionViewModel) },
             bottomBar = { MyBottomAppBar(rootNavController) },
             floatingActionButton = { MyFAB(rootNavController) }
         ) { innerPadding ->
@@ -161,7 +169,9 @@ fun MyModalDrawer(navController: NavHostController, drawerState: DrawerState, co
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
                 NavBarHeader()
-                Column(modifier = Modifier.padding(15.dp).fillMaxHeight()) {
+                Column(modifier = Modifier
+                    .padding(15.dp)
+                    .fillMaxHeight()) {
                     NavigationItem("Inicio", Icons.Default.Home) { 
                         navController.navigate("home"); corutina.launch { drawerState.close() } 
                     }
@@ -229,12 +239,14 @@ data class TopBarConfig(
 fun MyTopAppBar(
     config: TopBarConfig,
     myDrawerState: DrawerState,
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: NotificacionViewModel
 ) {
     val colores = MaterialTheme.colorScheme
     var isExpanded by remember { mutableStateOf(false) }
     val corutina = rememberCoroutineScope()
     val rotacion = remember { Animatable(0f) }
+    val notificaciones by viewModel.notificaciones.collectAsStateWithLifecycle()
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -253,55 +265,131 @@ fun MyTopAppBar(
                 Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu", tint = Color.Black)
             }
         },
+
         actions = {
             Box {
-                IconButton(
-                    onClick = {
-                        isExpanded = true
-                        corutina.launch {
-                            repeat(6) { index ->
-                                rotacion.animateTo(
-                                    targetValue = if (index % 2 == 0) -25f else 25f,
-                                    animationSpec = tween(durationMillis = 100, easing = LinearEasing)
-                                )
-                            }
-                            rotacion.animateTo(0f, animationSpec = tween(durationMillis = 100))
+                IconButton(onClick = {
+                    isExpanded = true
+                    corutina.launch {
+                        repeat(6) { index ->
+                            rotacion.animateTo(
+                                targetValue = if (index % 2 == 0) -25f else 25f,
+                                animationSpec = tween(durationMillis = 100, easing = LinearEasing)
+                            )
                         }
+                        rotacion.animateTo(0f, animationSpec = tween(durationMillis = 100))
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notificaciones",
-                        tint = Color.Black,
-                        modifier = Modifier.graphicsLayer(
-                            transformOrigin = TransformOrigin(0.5f, 0.0f),
-                            rotationZ = rotacion.value
+                }) {
+                    BadgedBox(
+                        badge = {
+                            if (notificaciones.isNotEmpty()) {
+                                Badge { Text(notificaciones.size.toString()) }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notificaciones",
+                            tint = Color.Black,
+                            modifier = Modifier.graphicsLayer(
+                                transformOrigin = TransformOrigin(0.5f, 0.0f),
+                                rotationZ = rotacion.value
+                            )
                         )
-                    )
+                    }
                 }
-
                 DropdownMenu(
                     expanded = isExpanded,
                     onDismissRequest = { isExpanded = false },
-                    modifier = Modifier.background(colores.background)
+                    modifier = Modifier
+                        .width(280.dp)
+                        .background(colores.background)
                 ) {
-                    DropdownMenuItem(
-                        leadingIcon = { Icon(
-                            Icons.Default.Inbox,
-                            null,
-                            tint = Color.Black) },
-                        text = { Text(
-                            "No tienes notificaciones",
-                            color = Color.Black) },
-                        onClick = {
-                            isExpanded = false
+                    if (notificaciones.isEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("No tienes notificaciones", color = Color.Gray) },
+                            onClick = { isExpanded = false }
+                        )
+                    } else {
+                        // Se muestran 6 notificaciones, como máximo
+                        notificaciones.take(6).forEach { notificacion ->
+                            DropdownMenuItem(
+                                text = {
+                                    Column {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(notificacion.titulo, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f), fontSize = 14.sp)
+                                            // Se utiliza la función para mapear la fecha
+                                            Text(notificacion.fecha.formatearFechaNotificacion(), fontSize = 10.sp, color = Color.Gray)
+                                        }
+                                        Text(notificacion.mensaje, fontSize = 12.sp, color = Color.DarkGray)
+                                    }
+                                },
+                                trailingIcon = {
+                                    IconButton(onClick = { viewModel.borrarNotificacion(notificacion.id) }) {
+                                        Icon(Icons.Default.Close, contentDescription = "Borrar", modifier = Modifier.size(18.dp))
+                                    }
+                                },
+                                onClick = { }
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
                         }
-                    )
+                    }
                 }
             }
         }
     )
 }
+
+
+                /*actions = {
+                    Box {
+                        IconButton(
+                            onClick = {
+                                isExpanded = true
+                                corutina.launch {
+                                    repeat(6) { index ->
+                                        rotacion.animateTo(
+                                            targetValue = if (index % 2 == 0) -25f else 25f,
+                                            animationSpec = tween(durationMillis = 100, easing = LinearEasing)
+                                        )
+                                    }
+                                    rotacion.animateTo(0f, animationSpec = tween(durationMillis = 100))
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = "Notificaciones",
+                                tint = Color.Black,
+                                modifier = Modifier.graphicsLayer(
+                                    transformOrigin = TransformOrigin(0.5f, 0.0f),
+                                    rotationZ = rotacion.value
+                                )
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = isExpanded,
+                            onDismissRequest = { isExpanded = false },
+                            modifier = Modifier.background(colores.background)
+                        ) {
+                            DropdownMenuItem(
+                                leadingIcon = { Icon(
+                                    Icons.Default.Inbox,
+                                    null,
+                                    tint = Color.Black) },
+                                text = { Text(
+                                    "No tienes notificaciones",
+                                    color = Color.Black) },
+                                onClick = {
+                                    isExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+        }*/
 
 @Composable
 fun MyBottomAppBar(navController : NavHostController) {
