@@ -118,7 +118,11 @@ fun PantallaCuentaUsuario(
         }
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedButton(
-            onClick = { navController.navigate("login") { popUpTo(0) { inclusive = true } } },
+            onClick = {
+                scope.launch {
+                    viewModel.cerrarSesion()
+                    navController.navigate("login") { popUpTo(0) { inclusive = true } } }
+                      },
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = colores.primary,
             ),

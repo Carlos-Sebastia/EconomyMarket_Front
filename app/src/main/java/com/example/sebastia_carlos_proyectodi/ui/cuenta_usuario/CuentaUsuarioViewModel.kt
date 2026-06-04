@@ -12,6 +12,7 @@ import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepositor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class CuentaUsuarioViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
@@ -22,6 +23,12 @@ class CuentaUsuarioViewModel(private val repository: UsuarioRepository) : ViewMo
             started = SharingStarted.WhileSubscribed(5_000),// Mantiene los datos vivos 5s, aunque cambie el estado de la pantalla.
             initialValue = null
         )
+
+    fun cerrarSesion() {
+        viewModelScope.launch {
+            repository.cerrarSesion()
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

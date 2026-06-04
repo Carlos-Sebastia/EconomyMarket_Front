@@ -90,4 +90,8 @@ class UsuarioRepositoryImpl(
     override fun obtenerUsuarioLogueado(): Flow<Usuario?> {
         return usuarioDao.obtenerUsuarioLogueado().map { it?.toDomain() }
     }
+
+    override suspend fun cerrarSesion() {
+        usuarioDao.borrarUsuarios()
+    }
 }

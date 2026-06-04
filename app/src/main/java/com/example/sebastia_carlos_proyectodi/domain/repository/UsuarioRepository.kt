@@ -9,5 +9,6 @@ interface UsuarioRepository {
     suspend fun cambiarContrasena(dni: String, nuevaContrasena: String): Boolean
     suspend fun crearUsuario(dni: String, nombre: String, apellidos: String, fechaNacimiento: String, email: String, mascota: String, contrasena: String): Boolean
     fun obtenerUsuarioLogueado(): Flow<Usuario?>
+    suspend fun cerrarSesion()
 
 }
