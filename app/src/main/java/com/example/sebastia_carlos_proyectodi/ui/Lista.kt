@@ -33,7 +33,7 @@ fun PantallaLista(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val productosEnLista = uiState.productos.filter { it.id in uiState.idsEnLista }
+    val productosEnLista = uiState.todosLosProductos.filter { it.id in uiState.idsEnLista }
 
     Column(
         modifier = Modifier.fillMaxSize(),

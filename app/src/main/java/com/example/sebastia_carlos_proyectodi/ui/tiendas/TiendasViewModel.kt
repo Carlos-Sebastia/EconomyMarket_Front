@@ -3,28 +3,24 @@ package com.example.sebastia_carlos_proyectodi.ui.tiendas
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.sebastia_carlos_proyectodi.MyApplication
 import com.example.sebastia_carlos_proyectodi.domain.model.Tienda
 import com.example.sebastia_carlos_proyectodi.domain.repository.TiendaRepository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
     val uiState: StateFlow<TiendasUiState> = repository.getTiendasStream()
         .map { lista ->
+            //La lista de tiendas se convierte en objeto de estado
             TiendasUiState(tiendas = lista, isLoading = false)
         }
+        //Crea un estado de la pantalla. Mantiene los datos vivos durante 5 segundos
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -44,6 +40,7 @@ class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
         }
     }
 
+    //Inyección de dependencias
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -55,6 +52,7 @@ class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
     }
 }
 
+//Elementos que necesita la UI
 data class TiendasUiState(
     val tiendas : List<Tienda> = emptyList(),
     val isLoading : Boolean = false,

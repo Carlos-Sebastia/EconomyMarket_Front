@@ -1,6 +1,8 @@
 package com.example.sebastia_carlos_proyectodi.data.repository
 
 import android.util.Log
+import com.example.sebastia_carlos_proyectodi.data.local.PreferenciasEntity
+import com.example.sebastia_carlos_proyectodi.data.local.PreferenciasDao
 import com.example.sebastia_carlos_proyectodi.data.local.UsuarioDao
 import com.example.sebastia_carlos_proyectodi.data.local.UsuarioEntity
 import com.example.sebastia_carlos_proyectodi.data.remote.UsuarioApiService
@@ -15,7 +17,8 @@ import kotlinx.coroutines.withContext
 
 class UsuarioRepositoryImpl(
     private val api: UsuarioApiService,
-    private val usuarioDao: UsuarioDao
+    private val usuarioDao: UsuarioDao,
+    private val preferenciasDao: PreferenciasDao
 ) : UsuarioRepository {
     override suspend fun validarUsuario(dni: String, contrasena: String): Boolean = withContext(Dispatchers.IO) {
         try {
@@ -63,6 +66,7 @@ class UsuarioRepositoryImpl(
         try {
             Log.e("Cambio contraseña", "DNI y contraseña obtenidos: $dni, $nuevaContrasena")
             api.cambiarContrasena(dni, nuevaContrasena)
+            true
         } catch (e: Exception) {
             Log.e("LoginError", "Error al cambiar contraseña: ${e.message}")
             false
@@ -93,5 +97,15 @@ class UsuarioRepositoryImpl(
 
     override suspend fun cerrarSesion() {
         usuarioDao.borrarUsuarios()
+    }
+
+    override fun getTodasLasPreferencias(): Flow<List<PreferenciasEntity>> {
+        return preferenciasDao.getTodasLasPreferencias()
+    }
+    override fun getPreferencias(dni: String): Flow<PreferenciasEntity?> {
+        return preferenciasDao.getPreferencias(dni)
+    }
+    override suspend fun guardarPreferencias(preferencias: PreferenciasEntity) = withContext(Dispatchers.IO) {
+        preferenciasDao.guardarPreferencias(preferencias)
     }
 }

@@ -1,11 +1,6 @@
 package com.example.sebastia_carlos_proyectodi.ui.productos
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +39,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,11 +55,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.sebastia_carlos_proyectodi.R
 import com.example.sebastia_carlos_proyectodi.domain.model.Producto
-
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -73,17 +64,16 @@ fun PantallaProductos(
     navController : NavHostController,
     viewModel: ProductosViewModel
 ) {
-    // Obtenemos los colores del tema
     val colores = MaterialTheme.colorScheme
-
+    // Estado del ViewModel
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Estructura principal de la pantalla
     Column(
         modifier = Modifier
             .fillMaxSize() // Ocupa toda la pantalla
             .background(colores.background) // Fondo según tema
     ) {
+        //Filtros para seleccionar categoría
         FilaChips(
             categoriaSeleccionada = uiState.categoriaSeleccionada,
             onCategoriaChange = { nueva ->
@@ -91,16 +81,14 @@ fun PantallaProductos(
             }
         )
 
-        val listaFiltrada = if (uiState.categoriaSeleccionada == null) {
-            uiState.productos
-        } else {
-            uiState.productos.filter { it.categoria == uiState.categoriaSeleccionada }
-        }
+        // Lista de productos según categoría seleccionada
+        val productosAMostrar = uiState.productos
 
         Box(modifier = Modifier
             .fillMaxSize()
             .background(colores.background)
         ) {
+            //Se muestra una vista diferente según el estado de carga de la pantalla
             when {
                 uiState.isLoading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -112,8 +100,9 @@ fun PantallaProductos(
                         onReintentar = { viewModel.cargarProductos() }
                     )                }
                 else -> {
+                    //Si se carga la pantalla correctamente, se muestran los productos
                     ListaProductosFiltrada(
-                        lista = listaFiltrada,
+                        lista = productosAMostrar,
                         idsEnLista = uiState.idsEnLista,
                         categoriaSeleccionada = uiState.categoriaSeleccionada,
                         onUpdateItem = { producto, isInList ->
@@ -165,6 +154,7 @@ fun FilaChips(
     onCategoriaChange : (String?) -> Unit
 ) {
     val colores = MaterialTheme.colorScheme
+    //Lista de categorías de productos
     val chipList : List<String> = listOf(
         "Carne",
         "Pescado",
@@ -183,6 +173,7 @@ fun FilaChips(
             FilterChip(
                 selected = (opcion == categoriaSeleccionada),
                 onClick = {
+                    //Al pulsar categoría seleccionada, se anula el filtro
                     if (estaSeleccionado) {
                     onCategoriaChange(null)
                     } else { onCategoriaChange(opcion) }},
@@ -190,6 +181,7 @@ fun FilaChips(
                 leadingIcon = if (opcion == categoriaSeleccionada) {
                     {
                         Icon(
+                            //Según la categoía, se muestra un icono en cada chip
                             imageVector = when (opcion) {
                                 "Carne" -> Icons.Default.KebabDining
                                 "Pescado" -> Icons.Default.SetMeal
@@ -222,6 +214,7 @@ fun ItemProducto(
     val colores = MaterialTheme.colorScheme
 
     val context = LocalContext.current
+    //Se busca el ID del recurso por nombre. Remember permite recordar el valor y no volver a buscarlo al visualizarlo de nuevo
     val resId = remember(producto.imagen) {
         if (producto.imagen.isNullOrEmpty()) {
             R.drawable.broken_image
@@ -276,9 +269,10 @@ fun ItemProducto(
                         producto.precio,
                         modifier = Modifier.padding(8.dp),
                     )
+
+                    //Cambia el icono dependiendo de si el producto está o no en la lista
                     IconButton(
                         onClick = { onCheckedChange(estaEnLista) },
-                        //modifier = Modifier.align(Alignment.TopEnd)
                     ) {
                         Icon(
                             imageVector = if (estaEnLista) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -301,18 +295,20 @@ fun ListaProductosFiltrada(
     onUpdateItem: (Producto, Boolean) -> Unit
     ) {
 
-    //Volver arriba de la columna al cambiar de categoría de productos
+    //Estado de la tabla de productos para recordar su posición del scroll
     val gridState = rememberLazyGridState()
+    //Volver arriba de la columna al cambiar de categoría de productos
     LaunchedEffect(categoriaSeleccionada) {
         gridState.animateScrollToItem(0)
     }
 
     LazyVerticalGrid(
-        state = gridState,
+        state = gridState, //Se añade el estado de la tabla de productos
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize(),
         content = {
+            //Dibuja los elementos visibles
             items(lista) { producto ->
                 val estaEnLista = producto.id in idsEnLista
                 ItemProducto(

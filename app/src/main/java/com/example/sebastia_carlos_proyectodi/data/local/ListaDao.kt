@@ -9,8 +9,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ListaDao {
-    @Query("SELECT productoId FROM lista")
-    fun getIdsEnLista(): Flow<List<Long>>
+
+    @Query("SELECT * FROM lista")
+    fun getTodasLasEntradas(): Flow<List<ListaEntity>>
+
+    @Query("SELECT productoId FROM lista WHERE usuarioDni = :usuarioDni")
+    fun getIdsEnLista(usuarioDni: String): Flow<List<Long>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(item: ListaEntity)
@@ -18,6 +22,6 @@ interface ListaDao {
     @Delete
     suspend fun eliminar(item: ListaEntity)
 
-    @Query("DELETE FROM lista")
-    suspend fun vaciarLista()
+    @Query("DELETE FROM lista WHERE usuarioDni = :usuarioDni")
+    suspend fun vaciarLista(usuarioDni: String)
 }

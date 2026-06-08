@@ -28,16 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.sebastia_carlos_proyectodi.MyApplication
 import com.example.sebastia_carlos_proyectodi.R
-import com.example.sebastia_carlos_proyectodi.ui.productos.ProductosViewModel
 import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoDITheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,14 +43,10 @@ data class HomeUiState(
 )
 
 class HomeViewModel : ViewModel() {
+    //Contenedor de datos cambiantes
     private val _uiState = MutableStateFlow(HomeUiState())
+    //Muestra los datos actualizados
     val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer { HomeViewModel() }
-        }
-    }
 }
 
 @Composable
@@ -73,6 +64,7 @@ fun PantallaPrincipal(
             .background(colores.background)
     ) {
 
+        //Primer card. Anuncio sobre cenas
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -112,6 +104,7 @@ fun PantallaPrincipal(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        //Segundo card. Anuncio sobre descuento
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -123,7 +116,7 @@ fun PantallaPrincipal(
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             Text(
-                text = uiState.mensajeBanner,
+                text = "Hasta un 30% de descuento en productos seleccionados",
                 modifier = Modifier
                     .padding(10.dp)
                     .align(Alignment.CenterHorizontally),
@@ -135,7 +128,7 @@ fun PantallaPrincipal(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-
+        // Tercer card. Anuncio sobre ser socio
         Card(
             modifier = Modifier
                 .fillMaxWidth()

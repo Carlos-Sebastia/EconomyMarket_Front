@@ -20,6 +20,10 @@ class ProductoRepositoryImpl(
     private val listaDao: ListaDao
 ) : ProductoRepository {
 
+    override fun getTodasLasEntradas(): Flow<List<ListaEntity>> {
+        return listaDao.getTodasLasEntradas()
+    }
+
     override fun getProductosStream(): Flow<List<Producto>> {
         return productoDao.getAllProductos().map { entities ->
             entities.map { it.toDomain() }
@@ -43,17 +47,17 @@ class ProductoRepositoryImpl(
         productoDao.getAllProductosOnce().map { it.toDomain() }
     }
 
-    override fun getIdsEnLista(): Flow<List<Long>> {
-        return listaDao.getIdsEnLista()
+    override fun getIdsEnLista(usuarioDni: String): Flow<List<Long>> {
+        return listaDao.getIdsEnLista(usuarioDni)
     }
-    override suspend fun insertarEnLista(id: Long) {
-        listaDao.insertar(ListaEntity(id))
+    override suspend fun insertarEnLista(id: Long, usuarioDni: String) {
+        listaDao.insertar(ListaEntity(id, usuarioDni))
     }
-    override suspend fun eliminarDeLista(id: Long) {
-        listaDao.eliminar(ListaEntity(id))
+    override suspend fun eliminarDeLista(id: Long, usuarioDni: String) {
+        listaDao.eliminar(ListaEntity(id, usuarioDni))
     }
 
-    override suspend fun vaciarLista() {
-        listaDao.vaciarLista()
+    override suspend fun vaciarLista(usuarioDni: String) {
+        listaDao.vaciarLista(usuarioDni)
     }
 }

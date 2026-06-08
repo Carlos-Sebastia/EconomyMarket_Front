@@ -10,14 +10,16 @@ import androidx.room.TypeConverters
     UsuarioEntity::class,
     ProductoEntity::class,
     TiendaEntity::class,
-    ListaEntity::class],
-    version = 3, exportSchema = false)
+    ListaEntity::class,
+    PreferenciasEntity::class],
+    version = 5, exportSchema = false)
 @TypeConverters(Utils::class)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
     abstract fun productoDao(): ProductoDao
     abstract fun tiendaDao(): TiendaDao
     abstract fun listaDao(): ListaDao
+    abstract fun preferenciasDao(): PreferenciasDao
 
     companion object {
         @Volatile

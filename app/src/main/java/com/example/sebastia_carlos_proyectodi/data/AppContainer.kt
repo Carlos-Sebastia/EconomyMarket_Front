@@ -54,7 +54,8 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     override val usuarioRepository: UsuarioRepository by lazy {
         UsuarioRepositoryImpl(
             usuarioService,
-            database.usuarioDao()
+            database.usuarioDao(),
+            database.preferenciasDao()
         )
     }
 

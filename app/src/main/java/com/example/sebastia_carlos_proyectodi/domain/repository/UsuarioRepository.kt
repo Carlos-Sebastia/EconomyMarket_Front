@@ -1,5 +1,6 @@
 package com.example.sebastia_carlos_proyectodi.domain.repository
 
+import com.example.sebastia_carlos_proyectodi.data.local.PreferenciasEntity
 import com.example.sebastia_carlos_proyectodi.domain.model.Usuario
 import kotlinx.coroutines.flow.Flow
 
@@ -10,5 +11,9 @@ interface UsuarioRepository {
     suspend fun crearUsuario(dni: String, nombre: String, apellidos: String, fechaNacimiento: String, email: String, mascota: String, contrasena: String): Boolean
     fun obtenerUsuarioLogueado(): Flow<Usuario?>
     suspend fun cerrarSesion()
+
+    fun getTodasLasPreferencias(): Flow<List<PreferenciasEntity>>
+    fun getPreferencias(dni: String): Flow<PreferenciasEntity?>
+    suspend fun guardarPreferencias(preferencias: PreferenciasEntity)
 
 }

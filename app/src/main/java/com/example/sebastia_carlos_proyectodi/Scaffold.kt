@@ -340,57 +340,6 @@ fun MyTopAppBar(
     )
 }
 
-
-                /*actions = {
-                    Box {
-                        IconButton(
-                            onClick = {
-                                isExpanded = true
-                                corutina.launch {
-                                    repeat(6) { index ->
-                                        rotacion.animateTo(
-                                            targetValue = if (index % 2 == 0) -25f else 25f,
-                                            animationSpec = tween(durationMillis = 100, easing = LinearEasing)
-                                        )
-                                    }
-                                    rotacion.animateTo(0f, animationSpec = tween(durationMillis = 100))
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "Notificaciones",
-                                tint = Color.Black,
-                                modifier = Modifier.graphicsLayer(
-                                    transformOrigin = TransformOrigin(0.5f, 0.0f),
-                                    rotationZ = rotacion.value
-                                )
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = isExpanded,
-                            onDismissRequest = { isExpanded = false },
-                            modifier = Modifier.background(colores.background)
-                        ) {
-                            DropdownMenuItem(
-                                leadingIcon = { Icon(
-                                    Icons.Default.Inbox,
-                                    null,
-                                    tint = Color.Black) },
-                                text = { Text(
-                                    "No tienes notificaciones",
-                                    color = Color.Black) },
-                                onClick = {
-                                    isExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-            )
-        }*/
-
 @Composable
 fun MyBottomAppBar(navController : NavHostController) {
     val colores = MaterialTheme.colorScheme
@@ -428,7 +377,6 @@ fun IconoBotonBottomBar(icono : ImageVector, texto : String, navController : Nav
         Text(texto)
     }
 }
-
 
 @Composable
 fun MyFAB(navController: NavHostController) {

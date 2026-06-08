@@ -46,6 +46,7 @@ fun PantallaTiendas(
     navController: NavHostController,
     viewModel: TiendasViewModel
     ) {
+    // Estado del ViewModel
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
 
@@ -54,6 +55,7 @@ fun PantallaTiendas(
             .fillMaxSize()
             .background(colores.background)
     ) {
+        //Diferentes pantallas según estado de carga
         when {
             uiState.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -65,12 +67,14 @@ fun PantallaTiendas(
                     onReintentar = { viewModel.cargarTiendas() }
                 )            }
             else -> {
+                //Si está todo bien, muestra las tiendas
                 ListaTiendas(uiState.tiendas)
             }
         }
     }
 }
 
+//Diseño de cada tarjeta de tienda
 @Composable
 fun ItemTienda(tienda: Tienda) {
     val colores = MaterialTheme.colorScheme
@@ -91,18 +95,20 @@ fun ItemTienda(tienda: Tienda) {
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            //Se cargan imágenes de internet
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(tienda.imagenUrl)
                     .crossfade(true)
                     .build(),
-                placeholder = painterResource(R.drawable.loading_image),
-                error = painterResource(R.drawable.broken_image),
+                placeholder = painterResource(R.drawable.loading_image), //Imagen mientras se descarga
+                error = painterResource(R.drawable.broken_image), //Imagen de error de descarga
                 contentDescription = "Foto tienda ${tienda.ciudad}",
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 contentScale = ContentScale.Crop
             )
 
+            //Datos de la tienda
             Column(
                 modifier = Modifier
                     .weight(1f)
