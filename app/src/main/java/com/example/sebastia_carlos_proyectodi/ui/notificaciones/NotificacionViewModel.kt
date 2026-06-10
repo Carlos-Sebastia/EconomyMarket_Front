@@ -20,6 +20,7 @@ class NotificacionViewModel(
     private val usuarioRepository: UsuarioRepository,
     private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
+    //Obtener notificaciones del usuario logueado
     val notificaciones: StateFlow<List<Notificacion>> = usuarioRepository.obtenerUsuarioLogueado()
         .flatMapLatest { usuario ->
             if (usuario != null) {
@@ -33,6 +34,7 @@ class NotificacionViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+    //Borrar notificación del menú
     fun borrarNotificacion(id: Long) {
         viewModelScope.launch {
             notificacionRepository.borrarNotificacion(id)

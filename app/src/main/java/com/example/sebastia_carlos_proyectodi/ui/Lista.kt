@@ -32,7 +32,6 @@ fun PantallaLista(
     viewModel: ProductosViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     val productosEnLista = uiState.todosLosProductos.filter { it.id in uiState.idsEnLista }
 
     Column(

@@ -11,14 +11,11 @@ import com.example.sebastia_carlos_proyectodi.domain.model.Notificacion
 import com.example.sebastia_carlos_proyectodi.domain.model.Usuario
 import com.example.sebastia_carlos_proyectodi.domain.repository.NotificacionRepository
 import com.example.sebastia_carlos_proyectodi.domain.repository.UsuarioRepository
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -39,7 +36,7 @@ class TarjetaViewModel(
             initialValue = null
         )
 
-    //Combinamos el usuario con la tabla de preferencias
+    //Combina el flujo de usuario con la tabla de preferencias
     val uiState: StateFlow<TarjetaUiState> = combine(
         usuarioState,
         usuarioRepository.getTodasLasPreferencias()

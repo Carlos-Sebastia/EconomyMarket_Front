@@ -23,7 +23,7 @@ class NotificacionRepositoryImpl(
                 val response = api.getNotificacionesByDni(dni)
                 emit(response.map { it.toDomain()})
             } catch (e: Exception) {
-                Log.e("NotifRepo", "Error al obtener notificaciones: ${e.message}")
+                e.printStackTrace()
                 emit(emptyList())
             }
             delay(5000)
@@ -35,7 +35,8 @@ class NotificacionRepositoryImpl(
             try {
                 api.crearNotificacion(notificacion.toDto())
             } catch (e: Exception) {
-                Log.e("NotifRepo", "Error al enviar notificación: ${e.message}")            }
+                e.printStackTrace()
+            }
         }
     }
 
@@ -44,7 +45,8 @@ class NotificacionRepositoryImpl(
             try {
                 api.borrarNotificacion(id)
             } catch (e: Exception) {
-                Log.e("NotifRepo", "Error al borrar notificación: ${e.message}")            }
+                e.printStackTrace()
+            }
         }
     }
 }

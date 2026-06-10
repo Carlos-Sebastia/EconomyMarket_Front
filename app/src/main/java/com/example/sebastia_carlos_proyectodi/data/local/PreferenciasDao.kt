@@ -13,7 +13,7 @@ interface PreferenciasDao {
     @Query("SELECT * FROM preferencias_usuario WHERE usuarioDni = :dni")
     fun getPreferencias(dni: String): Flow<PreferenciasEntity?>
 
-    //Guarda los datos de las preferencias en la tabla. En caso de ya existir datos, los remplaza
+    //Guarda los datos de las preferencias en la tabla. En caso de ya existir datos, los reemplaza
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun guardarPreferencias(preferencias: PreferenciasEntity)
 

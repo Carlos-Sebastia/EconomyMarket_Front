@@ -46,7 +46,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.sebastia_carlos_proyectodi.R
-import com.example.sebastia_carlos_proyectodi.ui.cuenta_usuario.CuentaUsuarioViewModel
 import com.example.sebastia_carlos_proyectodi.ui.theme.Sebastia_carlos_proyectoDITheme
 
 data class TarjetaUiState (
@@ -63,8 +62,6 @@ fun PantallaTarjeta(
     var mostrarAvisoLegal by rememberSaveable { mutableStateOf(true) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val colores = MaterialTheme.colorScheme
-
-
 
 
     Box(

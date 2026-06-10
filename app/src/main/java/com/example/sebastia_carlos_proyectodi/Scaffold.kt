@@ -1,6 +1,5 @@
 package com.example.sebastia_carlos_proyectodi
 
-import android.icu.number.Scale.none
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
@@ -8,7 +7,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,18 +34,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.sebastia_carlos_proyectodi.data.formatearFechaNotificacion
-import com.example.sebastia_carlos_proyectodi.ui.HomeViewModel
 import com.example.sebastia_carlos_proyectodi.ui.PantallaLista
 import com.example.sebastia_carlos_proyectodi.ui.PantallaPrincipal
 import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.CambioContraseñaViewModel
 import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaCambioContraseña
 import com.example.sebastia_carlos_proyectodi.ui.cambio_contraseña.PantallaValidacionCambioContraseña
-import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.CreacionUsuarioViewModel
 import com.example.sebastia_carlos_proyectodi.ui.creacion_usuario.PantallaCreacionUsuario
 import com.example.sebastia_carlos_proyectodi.ui.cuenta_usuario.PantallaCuentaUsuario
-import com.example.sebastia_carlos_proyectodi.ui.login.LoginViewModel
 import com.example.sebastia_carlos_proyectodi.ui.login.PantallaLogin
 import com.example.sebastia_carlos_proyectodi.ui.notificaciones.NotificacionViewModel
 import com.example.sebastia_carlos_proyectodi.ui.productos.PantallaProductos
@@ -64,15 +58,15 @@ fun CustomScaffold(navController: NavHostController) {
     AppNavGraph(navController = navController)
 }
 
+//Gestión de navegación entre pantallas
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     val activity = LocalActivity.current as ComponentActivity
-    
+
     val resetPasswordViewModel: CambioContraseñaViewModel = viewModel(
         viewModelStoreOwner = activity,
         factory = CambioContraseñaViewModel.Factory
     )
-
     val tarjetaViewModel: TarjetaViewModel = viewModel(
         viewModelStoreOwner = activity,
         factory = TarjetaViewModel.Factory
@@ -148,7 +142,7 @@ fun MainAppContainer(rootNavController: NavHostController, startRoute: String) {
             floatingActionButton = { MyFAB(rootNavController) }
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
-                // Aquí cargamos directamente la pantalla correspondiente según la ruta del rootNavController
+                // Cargamos la pantalla correspondiente según la ruta
                 when (currentRoute) {
                     "home" -> PantallaPrincipal(rootNavController)
                     "productos" -> PantallaProductos(rootNavController, productosViewModel)
@@ -318,7 +312,7 @@ fun MyTopAppBar(
                                     Column {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Text(notificacion.titulo, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f), fontSize = 14.sp)
-                                            // Se utiliza la función para mapear la fecha
+                                            // Función para mapear la fecha
                                             Text(notificacion.fecha.formatearFechaNotificacion(), fontSize = 10.sp, color = Color.Gray)
                                         }
                                         Text(notificacion.mensaje, fontSize = 12.sp, color = Color.DarkGray)

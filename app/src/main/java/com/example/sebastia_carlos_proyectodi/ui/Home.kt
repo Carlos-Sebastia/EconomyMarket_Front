@@ -43,9 +43,8 @@ data class HomeUiState(
 )
 
 class HomeViewModel : ViewModel() {
-    //Contenedor de datos cambiantes
+
     private val _uiState = MutableStateFlow(HomeUiState())
-    //Muestra los datos actualizados
     val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
 }
 

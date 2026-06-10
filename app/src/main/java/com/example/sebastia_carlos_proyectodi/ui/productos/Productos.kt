@@ -70,8 +70,8 @@ fun PantallaProductos(
 
     Column(
         modifier = Modifier
-            .fillMaxSize() // Ocupa toda la pantalla
-            .background(colores.background) // Fondo según tema
+            .fillMaxSize()
+            .background(colores.background)
     ) {
         //Filtros para seleccionar categoría
         FilaChips(
@@ -214,7 +214,7 @@ fun ItemProducto(
     val colores = MaterialTheme.colorScheme
 
     val context = LocalContext.current
-    //Se busca el ID del recurso por nombre. Remember permite recordar el valor y no volver a buscarlo al visualizarlo de nuevo
+    //Se busca el ID del recurso por nombre. Remember recuerda el valor y no volver a buscarlo al visualizarlo de nuevo
     val resId = remember(producto.imagen) {
         if (producto.imagen.isNullOrEmpty()) {
             R.drawable.broken_image
@@ -228,7 +228,7 @@ fun ItemProducto(
         }
     }
 
-    // Card que contiene toda la información del producto
+    // Card con la información del producto
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -252,7 +252,6 @@ fun ItemProducto(
                     contentScale = ContentScale.Crop
                 )
 
-                // Nombre del producto
                 Text(
                     producto.nombre,
                     modifier = Modifier.padding(8.dp),
@@ -308,7 +307,6 @@ fun ListaProductosFiltrada(
         modifier = Modifier
             .fillMaxSize(),
         content = {
-            //Dibuja los elementos visibles
             items(lista) { producto ->
                 val estaEnLista = producto.id in idsEnLista
                 ItemProducto(

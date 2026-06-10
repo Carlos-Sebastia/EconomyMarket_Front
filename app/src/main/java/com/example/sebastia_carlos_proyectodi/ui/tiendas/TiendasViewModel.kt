@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class TiendasViewModel(private val repository: TiendaRepository) : ViewModel() {
     val uiState: StateFlow<TiendasUiState> = repository.getTiendasStream()
         .map { lista ->
-            //La lista de tiendas se convierte en objeto de estado
+            //La lista de tiendas pasa a objeto de estado
             TiendasUiState(tiendas = lista, isLoading = false)
         }
         //Crea un estado de la pantalla. Mantiene los datos vivos durante 5 segundos

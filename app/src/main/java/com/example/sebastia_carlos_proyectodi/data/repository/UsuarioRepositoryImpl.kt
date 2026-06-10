@@ -22,12 +22,10 @@ class UsuarioRepositoryImpl(
 ) : UsuarioRepository {
     override suspend fun validarUsuario(dni: String, contrasena: String): Boolean = withContext(Dispatchers.IO) {
         try {
-            // 1. La contraseña se valida contra la API (Network), NO contra el DAO
             val usuarioDto = api.login(dni, contrasena)
             Log.e("Login", "Usuario obtenido: $usuarioDto")
 
             if (usuarioDto != null) {
-                // 2. Si es válido, guardamos los datos públicos en la DB local
                 usuarioDao.borrarUsuarios()
                 usuarioDao.insertarUsuario(usuarioDto.toEntity())
                 true
@@ -35,20 +33,17 @@ class UsuarioRepositoryImpl(
                 false
             }
         } catch (e: Exception) {
-            Log.e("LoginError", "Error al validar usuario y contraseña: ${e.message}")
-            e.printStackTrace() // Esto te dirá en el Logcat exactamente qué falla
+            e.printStackTrace()
             false
         }
     }
 
     override suspend fun validarMascota(dni: String, mascota: String): Boolean = withContext(Dispatchers.IO) {
         try {
-            // 1. La mascota se valida contra la API (Network), NO contra el DAO
             val usuarioDto = api.validarMascota(dni, mascota)
             Log.e("Validación mascota", "DNI y mascota obtenidos: $dni, $usuarioDto")
 
             if (usuarioDto != null) {
-                // 2. Si es válido, borramos la información de usuarios anteriores y guardamos los datos públicos en la DB local
                 usuarioDao.borrarUsuarios()
                 usuarioDao.insertarUsuario(usuarioDto.toEntity())
                 true
@@ -56,8 +51,7 @@ class UsuarioRepositoryImpl(
                 false
             }
         } catch (e: Exception) {
-            Log.e("LoginError", "Error al validar usuario y mascota: ${e.message}")
-            e.printStackTrace() // Esto te dirá en el Logcat exactamente qué falla
+            e.printStackTrace()
             false
         }
     }
@@ -68,7 +62,7 @@ class UsuarioRepositoryImpl(
             api.cambiarContrasena(dni, nuevaContrasena)
             true
         } catch (e: Exception) {
-            Log.e("LoginError", "Error al cambiar contraseña: ${e.message}")
+            e.printStackTrace()
             false
         }
     }
@@ -86,7 +80,7 @@ class UsuarioRepositoryImpl(
                 false
             }
         } catch (e: Exception) {
-            Log.e("LoginError", "Error al crear usuario: ${e.message}")
+            e.printStackTrace()
             false
         }
     }

@@ -67,7 +67,7 @@ fun PantallaTiendas(
                     onReintentar = { viewModel.cargarTiendas() }
                 )            }
             else -> {
-                //Si está todo bien, muestra las tiendas
+                //Si está bien, muestra las tiendas
                 ListaTiendas(uiState.tiendas)
             }
         }

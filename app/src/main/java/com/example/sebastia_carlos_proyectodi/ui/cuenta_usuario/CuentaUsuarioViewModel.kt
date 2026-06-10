@@ -19,7 +19,7 @@ class CuentaUsuarioViewModel(private val repository: UsuarioRepository) : ViewMo
     val usuarioState: StateFlow<Usuario?> = repository.obtenerUsuarioLogueado()
         .stateIn(
             scope = viewModelScope,
-            //el flujo trabaja mientras alguien visualiza la pantalla de cuenta de ususario
+            //El flujo trabaja mientras se visualiza la pantalla de cuenta de ususario
             started = SharingStarted.WhileSubscribed(5_000),// Mantiene los datos vivos 5s, aunque cambie el estado de la pantalla.
             initialValue = null
         )
